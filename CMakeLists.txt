@@ -14,8 +14,9 @@ include_directories(${SDL2_INCLUDE_DIRS})
 
 aux_source_directory( src SOURCES)
 aux_source_directory( src/Rendering RENDERING)
+aux_source_directory( src/Emulation EMULATION)
 
-add_executable( ${PROJECT_NAME} ${SOURCES} ${RENDERING})
+add_executable( ${PROJECT_NAME} ${SOURCES} ${RENDERING} ${EMULATION})
 
 # if(STATIC)
 #     target_link_libraries(${PROJECT_NAME} -static)
