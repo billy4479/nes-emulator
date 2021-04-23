@@ -1,9 +1,10 @@
 #pragma once
-#include "Color.hpp"
-#include "Types.hpp"
+#include "../Color.hpp"
+#include "../Types.hpp"
 #include <SDL2/SDL.h>
 #include <assert.h>
 
+namespace Rendering {
 class BackBuffer {
   public:
     BackBuffer() = default;
@@ -20,3 +21,4 @@ class BackBuffer {
     u32 *m_BackBuffer = nullptr;
     i32 m_Width, m_Height, m_Pitch;
 };
+} // namespace Rendering

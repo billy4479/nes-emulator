@@ -1,5 +1,7 @@
 #include "BackBuffer.hpp"
 
+namespace Rendering {
+
 void BackBuffer::Init(i32 width, i32 height, SDL_Renderer *renderer) {
     assert(m_BackBuffer == nullptr);
 
@@ -44,3 +46,4 @@ u32 &BackBuffer::At(i32 x, i32 y) {
 
     return m_BackBuffer[y * m_Width + x];
 }
+} // namespace Rendering

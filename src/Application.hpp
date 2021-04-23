@@ -1,6 +1,6 @@
 #pragma once
 #include "EventHandler.hpp"
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 #include "Types.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
@@ -23,6 +23,6 @@ class Application {
     i32 m_Height, m_Width;
 
     SDL_Window *m_Window;
-    Renderer m_Renderer;
+    Rendering::Renderer m_Renderer;
     EventHandler m_EventHandler;
 };

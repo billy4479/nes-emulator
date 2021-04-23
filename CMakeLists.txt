@@ -12,9 +12,10 @@ option(CROSS_COMPILE_WINDOWS "Cross compile for windows" OFF)
 find_package(SDL REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-file( GLOB SOURCES src/*.cpp )
+aux_source_directory( src SOURCES)
+aux_source_directory( src/Rendering RENDERING)
 
-add_executable( ${PROJECT_NAME} ${SOURCES} )
+add_executable( ${PROJECT_NAME} ${SOURCES} ${RENDERING})
 
 # if(STATIC)
 #     target_link_libraries(${PROJECT_NAME} -static)

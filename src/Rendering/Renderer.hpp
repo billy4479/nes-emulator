@@ -1,9 +1,11 @@
 #pragma once
 
+#include "../Types.hpp"
 #include "BackBuffer.hpp"
-#include "Types.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
+
+namespace Rendering {
 
 class Renderer {
   public:
@@ -21,3 +23,4 @@ class Renderer {
     SDL_Renderer *m_Renderer = nullptr;
     BackBuffer m_BackBuffer;
 };
+} // namespace Rendering

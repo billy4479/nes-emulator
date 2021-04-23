@@ -1,5 +1,7 @@
 #include "Renderer.hpp"
 
+namespace Rendering {
+
 void Renderer::Init(SDL_Window *window, i32 w, i32 h) {
     assert(m_Renderer == nullptr);
     m_Renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -20,3 +22,4 @@ void Renderer::PutPixel(i32 x, i32 y, Color c) {
 void Renderer::Clear(Color c) { m_BackBuffer.Clear(c); }
 
 void Renderer::Draw() { m_BackBuffer.Swap(); }
+} // namespace Rendering
