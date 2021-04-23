@@ -1,5 +1,4 @@
 #pragma once
-#define SDL_MAIN_HANDLED
 
 #include "BackBuffer.hpp"
 #include "Types.hpp"
