@@ -1,7 +1,9 @@
 #pragma once
+
+#include "AssetManager.hpp"
+#include "Common.hpp"
 #include "EventHandler.hpp"
 #include "Rendering/Renderer.hpp"
-#include "Types.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
 
@@ -12,6 +14,8 @@ class Application {
     ~Application();
 
     void Run();
+    Rendering::Renderer *GetRenderer();
+    AssetManager *GetAssetManager();
 
   private:
     bool isRunning = false;
@@ -23,6 +27,7 @@ class Application {
     i32 m_Height, m_Width;
 
     SDL_Window *m_Window;
+    AssetManager m_AssetManager;
     Rendering::Renderer m_Renderer;
     EventHandler m_EventHandler;
 };

@@ -1,4 +1,6 @@
 #include "BackBuffer.hpp"
+#include <SDL_render.h>
+#include <utility>
 
 namespace Rendering {
 
@@ -38,6 +40,11 @@ namespace Rendering {
         SDL_RenderClear(m_Renderer);
         SDL_UpdateTexture(m_Texture, nullptr, m_BackBuffer, m_Pitch);
         SDL_RenderCopy(m_Renderer, m_Texture, nullptr, nullptr);
+        for (auto tex : m_Textures) {
+            if (tex.first != nullptr) {
+                SDL_RenderCopy(m_Renderer, tex.first, nullptr, tex.second);
+            }
+        }
         SDL_RenderPresent(m_Renderer);
     }
 
@@ -47,4 +54,16 @@ namespace Rendering {
 
         return m_BackBuffer[y * m_Width + x];
     }
+
+    void BackBuffer::PutTexture(SDL_Texture *texture, SDL_Rect *position) {
+        m_Textures.push_back({texture, position});
+    }
+
+    void BackBuffer::DeleteTexture(SDL_Texture *texture) {
+        for (size_t i = 0; i < m_Textures.size(); i++) {
+            if (m_Textures[i].first == texture)
+                m_Textures.erase(m_Textures.begin() + i);
+        }
+    }
+
 } // namespace Rendering

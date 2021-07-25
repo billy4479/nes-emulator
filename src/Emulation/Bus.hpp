@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Types.hpp"
+#include "../Common.hpp"
 #include "CPU.hpp"
 #include <array>
 #include <stdexcept>

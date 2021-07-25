@@ -8,10 +8,10 @@ namespace Rendering {
         if (m_Renderer == nullptr)
             std::runtime_error("SDL failed to initialize renderer.");
 
-        m_BackBuffer.Init(w, h, *this);
+        m_BackBuffer.Init(w, h, GetSDLRenderer());
     }
 
-    Renderer::~Renderer() { SDL_DestroyRenderer(*this); }
+    Renderer::~Renderer() { SDL_DestroyRenderer(GetSDLRenderer()); }
 
     void Renderer::PutPixel(i32 x, i32 y, Color c) {
         assert(m_Renderer != nullptr);
@@ -22,4 +22,15 @@ namespace Rendering {
     void Renderer::Clear(Color c) { m_BackBuffer.Clear(c); }
 
     void Renderer::Draw() { m_BackBuffer.Swap(); }
+
+    void Renderer::PutTexture(SDL_Texture *texture, SDL_Rect *position) {
+        assert(texture != nullptr);
+        assert(position != nullptr);
+        m_BackBuffer.PutTexture(texture, position);
+    }
+    void Renderer::DeleteTexture(SDL_Texture *texture) {
+        assert(texture != nullptr);
+        m_BackBuffer.DeleteTexture(texture);
+    };
+
 } // namespace Rendering

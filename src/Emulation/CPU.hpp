@@ -1,5 +1,5 @@
 #pragma once
-#include "../Types.hpp"
+#include "../Common.hpp"
 #include <vector>
 
 namespace Emulation {
@@ -145,8 +145,8 @@ namespace Emulation {
 
         std::vector<Instruction> lookup;
 
-#define UPDATE_Z(R) stat.Z = R == 0x00
-#define UPDATE_N(R) stat.N = R & 0x80
+#define UPDATE_Z(R) stat.Z = (R) == 0x00
+#define UPDATE_N(R) stat.N = (R)&0x80
 #define UPDATE_NZ(R)                                                           \
     UPDATE_Z(R);                                                               \
     UPDATE_N(R);

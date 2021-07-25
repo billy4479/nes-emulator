@@ -10,22 +10,20 @@ namespace Emulation {
         u16 tmp = (u16)a + (u16)fetched + (u16)stat.C;
 
         stat.C = tmp > 255;
-        stat.Z = (tmp & 0x00FF) == 0;
-        stat.N = tmp & 0x80;
+        UPDATE_NZ((tmp & 0x00FF));
         stat.V =
-            (~((u16)a ^ (u16)fetched) & ((u16)a ^ (u16)tmp) &
+            (~((u16)a ^ (u16)fetched) & ((u16)a ^ tmp) &
              0x0080); // See
                       // https://github.com/OneLoneCoder/olcNES/blob/master/Part%232%20-%20CPU/olc6502.cpp#L659
         a = tmp & 0x00FF;
         return 1;
     }
 
-    // Bitwise AND between A and fetched
+    // Logical AND
     u8 CPU::AND() {
         fetch();
         a &= fetched;
-        stat.Z = a == 0x00;
-        stat.N = a & 0x80;
+        UPDATE_NZ(a);
         return 1;
     }
 
@@ -33,9 +31,9 @@ namespace Emulation {
     u8 CPU::ASL() {
         fetch();
         u16 tmp = (u16)fetched << 1;
-        stat.C = (tmp & 0xFF00) > 0;
-        stat.Z = (tmp & 0x00FF) == 0x00;
-        stat.N = tmp & 0x80;
+        stat.C = tmp & 0xFF00;
+        UPDATE_NZ((tmp & 0x00FF));
+
         if (lookup[opcode].addrmode == &CPU::IMP)
             a = tmp & 0x00FF;
         else

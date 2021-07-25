@@ -1,23 +1,24 @@
 #pragma once
 
-#include "../Types.hpp"
+#include "../Common.hpp"
 #include "BackBuffer.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
 
 namespace Rendering {
-
     class Renderer {
       public:
         Renderer() = default;
         ~Renderer();
 
-        operator SDL_Renderer *() { return m_Renderer; }
+        SDL_Renderer *GetSDLRenderer() { return m_Renderer; }
 
-        void Init(SDL_Window *window, i32 w, i32 h);
-        void PutPixel(i32 x, i32 y, Color c);
+        void Init(SDL_Window *, i32, i32);
+        void PutPixel(i32, i32, Color);
         void Draw();
-        void Clear(Color c);
+        void Clear(Color);
+        void PutTexture(SDL_Texture *, SDL_Rect *);
+        void DeleteTexture(SDL_Texture *);
 
       private:
         SDL_Renderer *m_Renderer = nullptr;
