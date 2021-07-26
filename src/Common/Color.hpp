@@ -15,4 +15,6 @@ struct Color {
     static Color green;
     static Color black;
     static Color white;
+
+    static Color hsl(u16 h, f32 s, f32 l, u8 a = 0xff);
 };

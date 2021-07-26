@@ -44,6 +44,7 @@ void Application::Run() {
     i32 line = 0;
 
     Gui::Label l(this, "JetBrains Mono", "Test .-", {100, 100});
+    u16 h = 0;
     auto fg = Color(0, 153, 0);
     while (isRunning) {
         frameStart = SDL_GetTicks();
@@ -52,13 +53,15 @@ void Application::Run() {
 
         // Logic here
 
-        for (i32 i = 0; i < m_Width; i++)
-            m_Renderer.PutPixel(i, count, fg);
-        count++;
-        if (count >= m_Height) {
-            count = 0;
-            fg.r++;
-        }
+        m_Renderer.Clear(Color::hsl(h++, 0.5, 0.5));
+
+        // for (i32 i = 0; i < m_Width; i++)
+        //     m_Renderer.PutPixel(i, count, fg);
+        // count++;
+        // if (count >= m_Height) {
+        //     count = 0;
+        //     fg = Color::hsl(180, 100, 100);
+        // }
 
         // m_Renderer.PutPixel(count++, line, fg);
         // if (count >= m_Width) {
