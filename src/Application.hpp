@@ -3,7 +3,7 @@
 #include "Common/AssetManager.hpp"
 #include "Common/Common.hpp"
 #include "Common/EventHandler.hpp"
-#include "Emulation/NES.hpp"
+#include "Emulation/Bus.hpp"
 #include "Gui/Renderer.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
@@ -31,5 +31,5 @@ class Application {
     AssetManager m_AssetManager;
     Gui::Renderer m_Renderer;
     EventHandler m_EventHandler;
-    Emulation::NES m_Nes;
+    Emulation::Bus m_Nes;
 };

@@ -21,7 +21,7 @@ Application::Application(i32 width, i32 height)
         "JetBrains Mono Regular Nerd Font Complete Mono.ttf", "JetBrains Mono",
         32);
 
-    dbg_print("%s", m_Nes.DumpRamAsHex(0x8000, 0x00F0).c_str());
+    dbg_print("%s", m_Nes.DumpAsHex(0x8000, 0x00F0).c_str());
 }
 
 Application::~Application() {

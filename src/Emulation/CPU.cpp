@@ -142,8 +142,8 @@ namespace Emulation {
 
     CPU::~CPU() = default;
 
-    void CPU::write(u16 addr, u8 data) { bus->Write(addr, data); }
-    u8 CPU::read(u16 addr) { return bus->Read(addr, false); }
+    void CPU::write(u16 addr, u8 data) { bus->CPUWrite(addr, data); }
+    u8 CPU::read(u16 addr) { return bus->CPURead(addr, false); }
 
     void CPU::clock() {
         if (cycles == 0) {

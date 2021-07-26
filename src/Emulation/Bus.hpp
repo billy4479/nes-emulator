@@ -2,7 +2,10 @@
 
 #include "../Common/Common.hpp"
 #include "CPU.hpp"
+#include "Cartridge.hpp"
+#include "PPU.hpp"
 #include <array>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -14,14 +17,22 @@ namespace Emulation {
 
         /*  *** Devices *** */
         CPU cpu;
-        std::array<u8, 64 * 1024> ram; // This is going to change
+        PPU ppu;
+        std::array<u8, 2048> m_CPURam; // This is going to change
+        std::shared_ptr<Cartridge> m_Cartridge;
 
-        /*  *** Read & Write *** */
-        void Write(u16 addr, u8 data);
-        u8 Read(u16 addr, bool readOnly = false);
+        /*  *** Read & Write ***  */
+        void CPUWrite(u16 addr, u8 data);
+        u8 CPURead(u16 addr, bool readOnly = false);
 
-        std::string DumpRamAsHex(u16 start, u16 length);
+        /*  *** System Interface ***  */
+        void InsertCartridge(const std::shared_ptr<Cartridge> &cartridge);
+        void Reset();
+        void Clock();
+
+        std::string DumpAsHex(u16 start, u16 length);
 
       private:
+        u32 m_ClockCounter;
     };
 } // namespace Emulation
