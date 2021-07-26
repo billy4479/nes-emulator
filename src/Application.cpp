@@ -1,5 +1,5 @@
 #include "Application.hpp"
-#include "Rendering/Label.hpp"
+#include "Gui/Label.hpp"
 #include <SDL2/SDL_ttf.h>
 
 Application::Application(i32 width, i32 height)
@@ -39,7 +39,7 @@ void Application::Run() {
     i32 count = 0;
     i32 line = 0;
 
-    Rendering::Label l(this, "JetBrains Mono", "Test .-", {100, 100});
+    Gui::Label l(this, "JetBrains Mono", "Test .-", {100, 100});
     while (isRunning) {
         frameStart = SDL_GetTicks();
 
@@ -65,6 +65,6 @@ void Application::Run() {
 
 void Application::AskToStop() { isRunning = false; }
 
-Rendering::Renderer *Application::GetRenderer() { return &m_Renderer; }
+Gui::Renderer *Application::GetRenderer() { return &m_Renderer; }
 
 AssetManager *Application::GetAssetManager() { return &m_AssetManager; }

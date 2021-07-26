@@ -15,10 +15,11 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
 aux_source_directory( src SOURCES)
-aux_source_directory( src/Rendering RENDERING)
+aux_source_directory( src/Common COMMON)
+aux_source_directory( src/Gui GUI)
 aux_source_directory( src/Emulation EMULATION)
 
-add_executable( ${PROJECT_NAME} ${SOURCES} ${RENDERING} ${EMULATION})
+add_executable( ${PROJECT_NAME} ${SOURCES} ${COMMON} ${GUI} ${EMULATION})
 
 if(STATIC)
     target_link_libraries(${PROJECT_NAME} PRIVATE -static)

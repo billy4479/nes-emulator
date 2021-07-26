@@ -1,12 +1,13 @@
 #pragma once
-#include "../Color.hpp"
+#include "../Common/Color.hpp"
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <memory>
 #include <utility>
 #include <vector>
 
-namespace Rendering {
+namespace Gui {
+
     class BackBuffer {
       public:
         BackBuffer() = default;
@@ -26,4 +27,4 @@ namespace Rendering {
         i32 m_Width, m_Height, m_Pitch;
         std::vector<std::pair<SDL_Texture *, SDL_Rect *>> m_Textures;
     };
-} // namespace Rendering
+} // namespace Gui

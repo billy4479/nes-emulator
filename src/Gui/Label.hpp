@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../Application.hpp"
-#include "../Common.hpp"
+#include "../Common/Common.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-namespace Rendering {
+namespace Gui {
 
     class Label {
       public:
@@ -23,4 +23,4 @@ namespace Rendering {
         SDL_Texture *m_texture = nullptr;
         Application *m_Application = nullptr;
     };
-} // namespace Rendering
+} // namespace Gui

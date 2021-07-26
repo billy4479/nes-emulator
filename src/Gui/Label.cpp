@@ -1,9 +1,9 @@
 #include "Label.hpp"
-#include "../AssetManager.hpp"
-#include "../Color.hpp"
+#include "../Common/AssetManager.hpp"
+#include "../Common/Color.hpp"
 #include <SDL2/SDL_ttf.h>
 
-namespace Rendering {
+namespace Gui {
     Label::Label(Application *application, const std::string &font_name,
                  const std::string &text, std::pair<i32, i32> position)
         : m_Application(application), m_font_name(font_name), m_text(text),
@@ -39,4 +39,4 @@ namespace Rendering {
         m_Application->GetRenderer()->DeleteTexture(m_texture);
         SDL_DestroyTexture(m_texture);
     }
-} // namespace Rendering
+} // namespace Gui

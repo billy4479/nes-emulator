@@ -1,9 +1,9 @@
 #pragma once
 
-#include "AssetManager.hpp"
-#include "Common.hpp"
-#include "EventHandler.hpp"
-#include "Rendering/Renderer.hpp"
+#include "Common/AssetManager.hpp"
+#include "Common/Common.hpp"
+#include "Common/EventHandler.hpp"
+#include "Gui/Renderer.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
 
@@ -14,7 +14,7 @@ class Application {
     ~Application();
 
     void Run();
-    Rendering::Renderer *GetRenderer();
+    Gui::Renderer *GetRenderer();
     AssetManager *GetAssetManager();
 
   private:
@@ -28,6 +28,6 @@ class Application {
 
     SDL_Window *m_Window;
     AssetManager m_AssetManager;
-    Rendering::Renderer m_Renderer;
+    Gui::Renderer m_Renderer;
     EventHandler m_EventHandler;
 };

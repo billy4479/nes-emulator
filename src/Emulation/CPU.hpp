@@ -1,5 +1,5 @@
 #pragma once
-#include "../Common.hpp"
+#include "../Common/Common.hpp"
 #include <vector>
 
 namespace Emulation {

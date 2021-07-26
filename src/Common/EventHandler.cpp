@@ -6,7 +6,7 @@ void EventHandler::HandleEvents() {
         switch (event.type) {
         case SDL_QUIT:
             m_ShouldClose = true;
-            std::cout << "Quitting!\n";
+            dbg_print("Quitting\n");
             break;
         }
     }

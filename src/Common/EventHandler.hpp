@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Common.hpp"
 #include <SDL2/SDL.h>
-#include <iostream>
 
 class EventHandler {
   public:

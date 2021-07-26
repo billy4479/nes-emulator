@@ -1,6 +1,6 @@
 #include "Renderer.hpp"
 
-namespace Rendering {
+namespace Gui {
 
     void Renderer::Init(SDL_Window *window, i32 w, i32 h) {
         assert(m_Renderer == nullptr);
@@ -33,4 +33,4 @@ namespace Rendering {
         m_BackBuffer.DeleteTexture(texture);
     };
 
-} // namespace Rendering
+} // namespace Gui

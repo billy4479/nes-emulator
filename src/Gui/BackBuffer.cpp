@@ -2,7 +2,7 @@
 #include <SDL_render.h>
 #include <utility>
 
-namespace Rendering {
+namespace Gui {
 
     void BackBuffer::Init(i32 width, i32 height, SDL_Renderer *renderer) {
         assert(m_BackBuffer == nullptr);
@@ -66,4 +66,4 @@ namespace Rendering {
         }
     }
 
-} // namespace Rendering
+} // namespace Gui

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Common.hpp"
+#include "../Common/Common.hpp"
 #include "BackBuffer.hpp"
 #include <SDL2/SDL.h>
 #include <stdexcept>
 
-namespace Rendering {
+namespace Gui {
     class Renderer {
       public:
         Renderer() = default;
@@ -24,4 +24,4 @@ namespace Rendering {
         SDL_Renderer *m_Renderer = nullptr;
         BackBuffer m_BackBuffer;
     };
-} // namespace Rendering
+} // namespace Gui
