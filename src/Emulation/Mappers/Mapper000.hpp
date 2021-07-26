@@ -1,40 +1,46 @@
 #pragma once
 #include "Mapper.hpp"
 
-namespace Emulation::Mappers {
-    class Mapper000 : public Mapper {
-        bool CPUMapRead(u16 addr, u32 &mappedAddr) override {
-            if (addr >= 0x8000 && addr <= 0xFFFF) {
-                mappedAddr = addr & (m_PRGBanks > 1 ? 0x7FFF : 0x3FFF);
-                return true;
+namespace Emulation {
+    namespace Mappers {
+        class Mapper000 : public Mapper {
+          public:
+            Mapper000(u8 prgBanks, u8 chrBanks) : Mapper(prgBanks, chrBanks) {}
+            ~Mapper000() = default;
+
+            bool CPUMapRead(u16 addr, u32 &mappedAddr) override {
+                if (addr >= 0x8000 && addr <= 0xFFFF) {
+                    mappedAddr = addr & (m_PRGBanks > 1 ? 0x7FFF : 0x3FFF);
+                    return true;
+                }
+
+                return false;
             }
 
-            return false;
-        }
+            bool CPUMapWrite(u16 addr, u32 &mappedAddr) override {
+                if (addr >= 0x8000 && addr <= 0xFFFF) {
+                    mappedAddr = addr & (m_PRGBanks > 1 ? 0x7FFF : 0x3FFF);
+                    return true;
+                }
 
-        bool CPUMapWrite(u16 addr, u32 &mappedAddr) override {
-            if (addr >= 0x8000 && addr <= 0xFFFF) {
-                mappedAddr = addr & (m_PRGBanks > 1 ? 0x7FFF : 0x3FFF);
-                return true;
+                return false;
             }
 
-            return false;
-        }
+            bool PPUMapRead(u16 addr, u32 &mappedAddr) override {
+                if (addr >= 0x8000 && addr <= 0x1FFF) {
+                    mappedAddr = addr;
+                    return true;
+                }
 
-        bool PPUMapRead(u16 addr, u32 &mappedAddr) override {
-            if (addr >= 0x8000 && addr <= 0x1FFF) {
-                mappedAddr = addr;
-                return true;
+                return false;
             }
 
-            return false;
-        }
+            bool PPUMapWrite(u16 addr, u32 &mappedAddr) override {
+                // if (addr >= 0x8000 && addr <= 0x1FFF)
+                //     return true;
 
-        bool PPUMapWrite(u16 addr, u32 &mappedAddr) override {
-            // if (addr >= 0x8000 && addr <= 0x1FFF)
-            //     return true;
-
-            return false;
-        }
-    };
-} // namespace Emulation::Mappers
+                return false;
+            }
+        };
+    } // namespace Mappers
+} // namespace Emulation
