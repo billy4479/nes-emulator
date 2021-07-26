@@ -6,8 +6,11 @@ namespace Emulation {
       public:
         NES();
         ~NES();
+        inline std::string DumpRamAsHex(u16 start, u16 length) {
+            return m_Bus.DumpRamAsHex(start, length);
+        }
 
       private:
-        Bus bus;
+        Bus m_Bus;
     };
 } // namespace Emulation

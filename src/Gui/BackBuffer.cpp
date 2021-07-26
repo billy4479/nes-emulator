@@ -50,7 +50,8 @@ namespace Gui {
 
     u32 &BackBuffer::At(i32 x, i32 y) {
         assert(m_BackBuffer != nullptr);
-        assert(x < m_Width && y < m_Height);
+        assert(x < m_Width);
+        assert(y < m_Height);
 
         return m_BackBuffer[y * m_Width + x];
     }

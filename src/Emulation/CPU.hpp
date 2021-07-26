@@ -118,7 +118,10 @@ namespace Emulation {
             u8 N : 1; // Negative
 
             Status() = default;
-            Status(u8 c) { *this = c; }
+            Status(u8 c) {
+                u8 *p = (u8 *)this;
+                *p = c;
+            }
             operator u8() { return (u8) * this; }
         };
 

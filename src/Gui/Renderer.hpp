@@ -3,7 +3,6 @@
 #include "../Common/Common.hpp"
 #include "BackBuffer.hpp"
 #include <SDL2/SDL.h>
-#include <stdexcept>
 
 namespace Gui {
     class Renderer {
@@ -17,8 +16,15 @@ namespace Gui {
         void PutPixel(i32, i32, Color);
         void Draw();
         void Clear(Color);
-        void PutTexture(SDL_Texture *, SDL_Rect *);
-        void DeleteTexture(SDL_Texture *);
+        inline void PutTexture(SDL_Texture *texture, SDL_Rect *position) {
+            assert(texture != nullptr);
+            assert(position != nullptr);
+            m_BackBuffer.PutTexture(texture, position);
+        }
+        inline void DeleteTexture(SDL_Texture *texture) {
+            assert(texture != nullptr);
+            m_BackBuffer.DeleteTexture(texture);
+        };
 
       private:
         SDL_Renderer *m_Renderer = nullptr;

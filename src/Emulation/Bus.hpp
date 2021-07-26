@@ -4,6 +4,7 @@
 #include "CPU.hpp"
 #include <array>
 #include <stdexcept>
+#include <string>
 
 namespace Emulation {
     class Bus {
@@ -18,6 +19,8 @@ namespace Emulation {
         /*  *** Read & Write *** */
         void Write(u16 addr, u8 data);
         u8 Read(u16 addr, bool readOnly = false);
+
+        std::string DumpRamAsHex(u16 start, u16 length);
 
       private:
     };
