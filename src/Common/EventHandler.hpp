@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Common.hpp"
 #include <SDL2/SDL.h>
 
+#include "Common.hpp"
+
 class EventHandler {
-  public:
+   public:
     void HandleEvents();
     bool ShouldClose();
 
-  private:
+   private:
     bool m_ShouldClose = false;
 };

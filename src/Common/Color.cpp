@@ -1,7 +1,10 @@
 #include "Color.hpp"
-#include "Common.hpp"
+
 #include <assert.h>
+
 #include <cmath>
+
+#include "Common.hpp"
 
 Color Color::black(0, 0, 0);
 Color Color::red(255, 0, 0);

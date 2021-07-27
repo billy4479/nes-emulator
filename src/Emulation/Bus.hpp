@@ -1,38 +1,41 @@
 #pragma once
 
-#include "../Common/Common.hpp"
-#include "CPU.hpp"
-#include "Cartridge.hpp"
-#include "PPU.hpp"
 #include <array>
 #include <memory>
 #include <stdexcept>
 #include <string>
 
+#include "../Common/Common.hpp"
+#include "CPU.hpp"
+#include "Cartridge.hpp"
+#include "PPU.hpp"
+
 namespace Emulation {
-    class Bus {
-      public:
-        Bus();
-        ~Bus();
 
-        /*  *** Devices *** */
-        CPU cpu;
-        PPU ppu;
-        std::array<u8, 2048> m_CPURam; // This is going to change
-        std::shared_ptr<Cartridge> m_Cartridge;
+class Bus {
+   public:
+    Bus();
+    ~Bus();
 
-        /*  *** Read & Write ***  */
-        void CPUWrite(u16 addr, u8 data);
-        u8 CPURead(u16 addr, bool readOnly = false);
+    /*  *** Devices *** */
+    CPU cpu;
+    PPU ppu;
+    std::array<u8, 2048> m_CPURam;  // This is going to change
+    std::shared_ptr<Cartridge> m_Cartridge;
 
-        /*  *** System Interface ***  */
-        void InsertCartridge(const std::shared_ptr<Cartridge> &cartridge);
-        void Reset();
-        void Clock();
+    /*  *** Read & Write ***  */
+    void CPUWrite(u16 addr, u8 data);
+    u8 CPURead(u16 addr, bool readOnly = false);
 
-        std::string DumpAsHex(u16 start, u16 length);
+    /*  *** System Interface ***  */
+    void InsertCartridge(const std::shared_ptr<Cartridge> &cartridge);
+    void Reset();
+    void Clock();
 
-      private:
-        u32 m_ClockCounter;
-    };
-} // namespace Emulation
+    std::string DumpAsHex(u16 start, u16 length);
+
+   private:
+    u32 m_ClockCounter;
+};
+
+}  // namespace Emulation

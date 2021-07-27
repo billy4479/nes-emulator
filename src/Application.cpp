@@ -1,14 +1,15 @@
 #include "Application.hpp"
+
+#include <SDL2/SDL_ttf.h>
+
 #include "Common/Common.hpp"
 #include "Gui/Label.hpp"
-#include <SDL2/SDL_ttf.h>
 
 Application::Application(i32 width, i32 height)
     : m_Height(height), m_Width(width) {
     if (SDL_Init(SDL_INIT_EVERYTHING))
         throw std::runtime_error("SDL failed to initialize.");
-    if (TTF_Init())
-        throw std::runtime_error("SDL_ttf failed to initialize.");
+    if (TTF_Init()) throw std::runtime_error("SDL_ttf failed to initialize.");
 
     m_Window = SDL_CreateWindow("NES-Emulator", SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED, m_Width, m_Height, 0);
@@ -76,8 +77,7 @@ void Application::Run() {
         isRunning = !m_EventHandler.ShouldClose();
 
         frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime)
-            SDL_Delay(frameDelay - frameTime);
+        if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
     }
 }
 

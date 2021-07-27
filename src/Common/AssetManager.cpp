@@ -1,7 +1,10 @@
 #include "AssetManager.hpp"
-#include "Common.hpp"
+
 #include <assert.h>
+
 #include <stdexcept>
+
+#include "Common.hpp"
 
 void AssetManager::LoadFont(const std::filesystem::path &path,
                             const std::string &name, u32 size) {
@@ -18,8 +21,7 @@ TTF_Font *AssetManager::GetFont(const std::string &name) {
 
 AssetManager::~AssetManager() {
     ReleaseTTF();
-    if (m_rom.is_open())
-        m_rom.close();
+    if (m_rom.is_open()) m_rom.close();
 }
 
 void AssetManager::ReleaseTTF() {
@@ -36,8 +38,7 @@ void AssetManager::ReleaseTTF() {
 }
 
 void AssetManager::LoadROM(const std::filesystem::path &path) {
-    if (m_rom.is_open())
-        m_rom.close();
+    if (m_rom.is_open()) m_rom.close();
     m_rom.open(path, std::ios::binary | std::ios::ate);
     assert(m_rom.is_open());
 
@@ -50,7 +51,6 @@ void AssetManager::LoadROM(const std::filesystem::path &path) {
 }
 
 std::ifstream *AssetManager::GetROM() {
-    if (m_rom.is_open())
-        return &m_rom;
+    if (m_rom.is_open()) return &m_rom;
     return nullptr;
 }

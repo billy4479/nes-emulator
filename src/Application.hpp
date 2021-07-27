@@ -1,16 +1,17 @@
 #pragma once
 
+#include <SDL2/SDL.h>
+
+#include <stdexcept>
+
 #include "Common/AssetManager.hpp"
 #include "Common/Common.hpp"
 #include "Common/EventHandler.hpp"
 #include "Emulation/Bus.hpp"
 #include "Gui/Renderer.hpp"
-#include <SDL2/SDL.h>
-#include <stdexcept>
 
 class Application {
-
-  public:
+   public:
     Application(i32 width, i32 height);
     ~Application();
 
@@ -18,7 +19,7 @@ class Application {
     Gui::Renderer *GetRenderer();
     AssetManager *GetAssetManager();
 
-  private:
+   private:
     bool isRunning = false;
     void AskToStop();
 

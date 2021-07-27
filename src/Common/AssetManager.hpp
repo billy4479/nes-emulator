@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Common.hpp"
 #include <SDL2/SDL_ttf.h>
+
 #include <filesystem>
 #include <fstream>
 #include <map>
 #include <string>
 
+#include "Common.hpp"
+
 class AssetManager {
-  public:
+   public:
     AssetManager() = default;
     ~AssetManager();
 
@@ -19,7 +21,7 @@ class AssetManager {
     void LoadROM(const std::filesystem::path &);
     std::ifstream *GetROM();
 
-  private:
+   private:
     const std::filesystem::path m_AssetsFolder{"assets"};
     std::map<const std::string, TTF_Font *> m_fonts;
     std::ifstream m_rom;
