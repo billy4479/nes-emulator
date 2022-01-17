@@ -21,7 +21,6 @@ class CPU {
     void ConnectToBus(Bus *b) { bus = b; }
 
     /*  *** OPCodes *** */
-#pragma region OPCodes
     u8 ADC();
     u8 AND();
     u8 ASL();
@@ -80,10 +79,8 @@ class CPU {
     u8 TYA();
 
     u8 XXX();
-#pragma endregion OPCodes
 
-/*  *** Addressing Modes *** */
-#pragma region AddrModes
+    /*  *** Addressing Modes *** */
     u8 IMP();
     u8 IMM();
     u8 ZP0();
@@ -96,7 +93,6 @@ class CPU {
     u8 IND();
     u8 IZX();
     u8 IZY();
-#pragma endregion AddrModes
 
     u8 fetch();         // Fetch data at the Program Counter
     u8 fetched = 0x00;  // Data received from fetch()
@@ -123,7 +119,7 @@ class CPU {
             u8 *p = (u8 *)this;
             *p = c;
         }
-        operator u8() { return (u8) * this; }
+        operator u8() { return *reinterpret_cast<u8 *>(this); }
     };
 
     /*  *** Registers *** */

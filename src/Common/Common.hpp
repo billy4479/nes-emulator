@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cassert"
+
 #ifndef NDEBUG
     #define DEBUG 1
 #endif

@@ -2,35 +2,49 @@
 
 #include <SDL2/SDL.h>
 
-#include "../Common/Common.hpp"
-#include "BackBuffer.hpp"
+#include <glm/ext/vector_int2.hpp>
+#include <glm/vec2.hpp>
+#include <string_view>
 
-namespace Gui {
+#include "../Common/Color.hpp"
+#include "../Common/Common.hpp"
+#include "DrawableTexture.hpp"
+
+namespace GUI {
+
+enum class CenterPoint {
+    TOP_RIGHT,
+    TOP_CENTER,
+    TOP_LEFT,
+    CENTER_RIGHT,
+    CENTER_CENTER,
+    CENTER_LEFT,
+    BOTTOM_RIGHT,
+    BOTTOM_CENTER,
+    BOTTOM_LEFT,
+};
 
 class Renderer {
    public:
-    Renderer() = default;
+    Renderer(std::string_view name, glm::ivec2 size);
     ~Renderer();
 
-    SDL_Renderer *GetSDLRenderer() { return m_Renderer; }
-
-    void Init(SDL_Window *, i32, i32);
-    void PutPixel(i32, i32, Color);
-    void Draw();
-    void Clear(Color);
-    inline void PutTexture(SDL_Texture *texture, SDL_Rect *position) {
-        assert(texture != nullptr);
-        assert(position != nullptr);
-        m_BackBuffer.PutTexture(texture, position);
-    }
-    inline void DeleteTexture(SDL_Texture *texture) {
-        assert(texture != nullptr);
-        m_BackBuffer.DeleteTexture(texture);
-    };
+    void Clear();
+    void RenderToScreen();
+    void DrawTexture(SDL_Texture *texture, glm::ivec2 position, glm::vec2 scale,
+                     f32 rotation = 0, Color tint = Color::white,
+                     CenterPoint anchor = CenterPoint::TOP_LEFT,
+                     CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
+    DrawableTexture &GetEmulatorScreen();
 
    private:
     SDL_Renderer *m_Renderer = nullptr;
-    BackBuffer m_BackBuffer;
+    SDL_Window *m_Window = nullptr;
+
+    DrawableTexture m_EmulatorScreen;
+
+    SDL_Texture *Convert(SDL_Surface *surface);
+    friend class DrawableTexture;
 };
 
-}  // namespace Gui
+}  // namespace GUI

@@ -22,7 +22,7 @@ void Bus::CPUWrite(u16 addr, u8 data) {
     if (m_Cartridge->CPUWrite(addr, data)) {
     }
 
-    else if (addr >= 0x0000 && addr <= 0x1FFF)
+    else if (addr <= 0x1FFF)
         m_CPURam[addr & 0x07FF] = data;
 
     else if (addr >= 0x2000 && addr <= 0x3FFF)
@@ -37,7 +37,7 @@ u8 Bus::CPURead(u16 addr, bool readOnly) {
     if (m_Cartridge->CPURead(addr, data)) {
     }
 
-    else if (addr >= 0x0000 && addr <= 0x1FFF)
+    else if (addr <= 0x1FFF)
         data = m_CPURam[addr & 0x07FF];
 
     else if (addr >= 0x2000 && addr <= 0x3FFF)

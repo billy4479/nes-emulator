@@ -9,14 +9,15 @@
 #include "Common/EventHandler.hpp"
 #include "Emulation/Bus.hpp"
 #include "Gui/Renderer.hpp"
+#include "glm/ext/vector_int2.hpp"
 
 class Application {
    public:
-    Application(i32 width, i32 height);
+    Application(glm::ivec2);
     ~Application();
 
     void Run();
-    Gui::Renderer *GetRenderer();
+    GUI::Renderer *GetRenderer();
     AssetManager *GetAssetManager();
 
    private:
@@ -28,9 +29,8 @@ class Application {
 
     i32 m_Height, m_Width;
 
-    SDL_Window *m_Window;
     AssetManager m_AssetManager;
-    Gui::Renderer m_Renderer;
+    GUI::Renderer m_Renderer;
     EventHandler m_EventHandler;
     Emulation::Bus m_Nes;
 };

@@ -60,6 +60,7 @@ Cartridge::Cartridge(std::filesystem::path path) {
         case 0:
             m_Mapper =
                 std::make_shared<Mappers::Mapper000>(m_PRGBanks, m_CHRBanks);
+            break;
         default:
             assert(false);
     }

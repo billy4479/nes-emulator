@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
 #include <string>
@@ -8,22 +7,25 @@
 #include "../Application.hpp"
 #include "../Common/Common.hpp"
 
-namespace Gui {
+namespace GUI {
 
 class Label {
    public:
-    Label(Application *, const std::string &, const std::string &,
-          std::pair<i32, i32>);
-    ~Label();
+    Label() = default;
+    Label(const std::string& text, TTF_Font* font,
+          const Color& color = Color::white);
 
-    void SetText(const std::string &);
+    void SetText(const std::string& text);
+    void SetFont(TTF_Font*);
+    void SetColor(const Color& color);
+
+    const std::string& GetText() const;
 
    private:
-    std::string m_font_name;
-    std::string m_text;
-    SDL_Rect m_position;
-    SDL_Texture *m_texture = nullptr;
-    Application *m_Application = nullptr;
+    std::string m_Content;
+    TTF_Font* m_Font = nullptr;
+    SDL_Texture* m_Texture = nullptr;
+    Color m_Color = Color::white;
 };
 
-}  // namespace Gui
+}  // namespace GUI

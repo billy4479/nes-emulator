@@ -3,7 +3,7 @@
 
 namespace Emulation {
 
-u8 PPU::CPURead(u16 addr, bool readOnly) {
+u8 PPU::CPURead(u16 addr, [[maybe_unused]] bool readOnly) {
     u8 data = 0x00;
 
     switch (addr) {
@@ -28,7 +28,7 @@ u8 PPU::CPURead(u16 addr, bool readOnly) {
     return data;
 }
 
-void PPU::CPUWrite(u16 addr, u8 data) {
+void PPU::CPUWrite(u16 addr, [[maybe_unused]] u8 data) {
     switch (addr) {
         case 0x0000:  // Control
             break;
@@ -49,7 +49,7 @@ void PPU::CPUWrite(u16 addr, u8 data) {
     }
 }
 
-u8 PPU::PPURead(u16 addr, bool readOnly) {
+u8 PPU::PPURead(u16 addr, [[maybe_unused]] bool readOnly) {
     u8 data = 0;
     addr &= 0x3FFF;
 
