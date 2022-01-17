@@ -49,7 +49,6 @@ void Application::Run() {
         // Logic here
 
         m_Renderer.GetEmulatorScreen().Clear(Color::hsl(h++, 0.5, 0.5));
-        dbg_print("%d\n", h);
 
         // for (i32 i = 0; i < m_Width; i++)
         //     m_Renderer.PutPixel(i, count, fg);

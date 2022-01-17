@@ -3,8 +3,6 @@
 #include <SDL_render.h>
 #include <SDL_surface.h>
 
-#include <cstring>
-
 #include "Renderer.hpp"
 #include "glm/ext/vector_int2.hpp"
 

@@ -24,7 +24,6 @@ Renderer::~Renderer() {
 void Renderer::Clear() { SDL_RenderClear(m_Renderer); }
 
 SDL_Texture* Renderer::Convert(SDL_Surface* surface) {
-    dbg_print("Convert\n");
     return SDL_CreateTextureFromSurface(m_Renderer, surface);
 }
 
