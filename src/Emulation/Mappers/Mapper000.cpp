@@ -32,11 +32,11 @@ bool Mapper000::PPUMapRead(u16 addr, u32 &mappedAddr) {
 
 bool Mapper000::PPUMapWrite(u16 addr, u32 &mappedAddr) {
     if (addr <= 0x1FFF) {
-        // if (nCHRBanks == 0) {
-        // Treat as RAM
-        mappedAddr = addr;
-        return true;
-        // }
+        if (m_CHRBanks == 0) {
+            // Treat as RAM
+            mappedAddr = addr;
+            return true;
+        }
     }
 
     return false;

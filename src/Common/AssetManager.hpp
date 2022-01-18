@@ -18,11 +18,7 @@ class AssetManager {
     TTF_Font *GetFont(const std::string &);
     void ReleaseTTF();
 
-    void LoadROM(const std::filesystem::path &);
-    std::ifstream *GetROM();
-
    private:
     const std::filesystem::path m_AssetsFolder{"assets"};
     std::map<const std::string, TTF_Font *> m_fonts;
-    std::ifstream m_rom;
 };

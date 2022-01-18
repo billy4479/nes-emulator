@@ -1,25 +1,27 @@
 #pragma once
 
-#include "cassert"
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
 
 #ifndef NDEBUG
     #define DEBUG 1
 #endif
 
-using u8 = unsigned char;
-using u16 = unsigned short;
-using u32 = unsigned int;
-using u64 = unsigned long long;
+using u8 = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
 
-using i8 = char;
-using i16 = short;
-using i32 = int;
-using i64 = long long;
+using i8 = std::int8_t;
+using i16 = std::int16_t;
+using i32 = std::int32_t;
+using i64 = std::int64_t;
 
 using f32 = float;
 using f64 = double;
 
-using size_t = __SIZE_TYPE__;
+using std::size_t;
 
 #ifdef DEBUG
     #include <cstdio>
