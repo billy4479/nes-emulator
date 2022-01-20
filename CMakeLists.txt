@@ -52,3 +52,6 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -fexceptions)
+
+file(GLOB ASSETS "assets/*")
+file(COPY ${ASSETS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/assets)

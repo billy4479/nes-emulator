@@ -45,15 +45,21 @@ u8 Bus::CPURead(u16 addr, bool readOnly) {
         data = ppu.CPURead(addr & 0x0007, readOnly);
 
     else {
-        dbg_print("Specified address %x is outside the bus' range.\n", addr);
+        dbg_print("[!] Specified address %x is outside the bus' range.\n",
+                  addr);
         // assert(false);
     }
     return data;
 }
 
-void Bus::InsertCartridge(const std::shared_ptr<Cartridge> &cartridge) {
+void Bus::InsertCartridge(const std::shared_ptr<Cartridge>& cartridge) {
     m_Cartridge = cartridge;
     ppu.ConnectCatridge(cartridge);
+}
+
+void Bus::LoadAndInsertCartridge(std::filesystem::path path,
+                                 const AssetManager& am) {
+    InsertCartridge(std::make_shared<Emulation::Cartridge>(am.LoadROM(path)));
 }
 
 void Bus::Clock() {

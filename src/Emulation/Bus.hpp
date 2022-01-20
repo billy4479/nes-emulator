@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "../Common/AssetManager.hpp"
 #include "../Common/Common.hpp"
 #include "CPU.hpp"
 #include "Cartridge.hpp"
@@ -29,6 +30,7 @@ class Bus {
 
     /*  *** System Interface ***  */
     void InsertCartridge(const std::shared_ptr<Cartridge> &cartridge);
+    void LoadAndInsertCartridge(std::filesystem::path, const AssetManager &);
     void Reset();
     void Clock();
 

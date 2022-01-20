@@ -10,7 +10,8 @@
 #include "Gui/Label.hpp"
 #include "glm/ext/vector_int2.hpp"
 
-Application::Application(glm::ivec2 size) : m_Renderer("NES-Emulator", size) {
+Application::Application(glm::ivec2 size)
+    : m_AssetManager("assets"), m_Renderer("NES-Emulator", size) {
     assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
     assert(TTF_Init() == 0);
 
@@ -22,7 +23,7 @@ Application::Application(glm::ivec2 size) : m_Renderer("NES-Emulator", size) {
 }
 
 Application::~Application() {
-    m_AssetManager.ReleaseTTF();
+    m_AssetManager.ReleaseSDLDependencies();
     TTF_Quit();
     SDL_Quit();
 }
@@ -31,8 +32,7 @@ void Application::Run() {
     assert(!isRunning);
     isRunning = true;
 
-    m_Nes.InsertCartridge(std::make_shared<Emulation::Cartridge>(
-        "/home/billy/code/nes-emulator/roms/nestest.nes"));
+    m_Nes.LoadAndInsertCartridge("nestest.nes", m_AssetManager);
     m_Nes.Reset();
 
     u32 frameStart;
