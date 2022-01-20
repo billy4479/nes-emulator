@@ -11,7 +11,7 @@ namespace GUI {
 
 class Label {
    public:
-    Label() = default;
+    //     Label() = default;
     Label(const std::string& text, TTF_Font* font,
           const Color& color = Color::white);
 

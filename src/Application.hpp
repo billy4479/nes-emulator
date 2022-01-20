@@ -8,6 +8,7 @@
 #include "Common/Common.hpp"
 #include "Common/EventHandler.hpp"
 #include "Emulation/Bus.hpp"
+#include "Gui/FPSManager.hpp"
 #include "Gui/Renderer.hpp"
 
 class Application {
@@ -28,6 +29,7 @@ class Application {
 
     AssetManager m_AssetManager;
     GUI::Renderer m_Renderer;
+    FPSManager m_FPSManager;
     EventHandler m_EventHandler;
     Emulation::Bus m_Nes;
 };

@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL_ttf.h>
 
+#include <cstdio>
 #include <memory>
 
 #include "Common/Common.hpp"
@@ -35,13 +36,12 @@ void Application::Run() {
     m_Nes.LoadAndInsertCartridge("nestest.nes", m_AssetManager);
     m_Nes.Reset();
 
-    u32 frameStart;
-    i32 frameTime;
-
     auto scale = glm::ivec2{1, 1} * PIXEL_SCALE_FACTOR;
 
+    auto fpsLabel = GUI::Label("", m_AssetManager.GetFont("JetBrains Mono"));
+
     while (isRunning) {
-        frameStart = SDL_GetTicks();
+        m_FPSManager.StartFrame();
 
         m_Renderer.Clear();
         m_EventHandler.HandleEvents();
@@ -55,14 +55,20 @@ void Application::Run() {
         m_Nes.ppu.m_FrameComplete = false;
         m_Renderer.DrawTexture(m_Nes.ppu.GetScreenTexture(), {0, 0}, scale);
 
+        {
+            std::stringstream ss;
+            ss << "FPS: " << m_FPSManager.GetActualFPS();
+            fpsLabel.SetText(ss.str());
+            m_Renderer.DrawText(fpsLabel, {NES_EMULATOR_SCREEN_SIZE.x + 10, 0});
+        }
+
         // End of logic
 
         m_Renderer.RenderToScreen();
 
         isRunning = !m_EventHandler.ShouldClose();
 
-        frameTime = SDL_GetTicks() - frameStart;
-        if (frameDelay > frameTime) SDL_Delay(frameDelay - frameTime);
+        m_FPSManager.EndFrameAndWait();
     }
 }
 
