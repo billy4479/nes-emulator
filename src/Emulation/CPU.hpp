@@ -13,14 +13,17 @@ class CPU {
     CPU();
     ~CPU();
 
-    void reset();  // Reset CPU state
-    void irq();    // Interrupt Request
-    void nmi();    // Non-Maskable Interrupt Request
-    void clock();  // Execute one clock cycle
+    void Reset();  // Reset CPU state
+    void IRQ();    // Interrupt Request
+    void NMI();    // Non-Maskable Interrupt Request
+    void Clock();  // Execute one clock cycle
 
-    void ConnectToBus(Bus *b) { bus = b; }
+    void ConnectToBus(Bus *b) { m_Bus = b; }
+
+    bool IsComplete() { return cycles == 0; }
 
     /*  *** OPCodes *** */
+   private:
     u8 ADC();
     u8 AND();
     u8 ASL();
@@ -81,6 +84,7 @@ class CPU {
     u8 XXX();
 
     /*  *** Addressing Modes *** */
+   private:
     u8 IMP();
     u8 IMM();
     u8 ZP0();
@@ -130,11 +134,11 @@ class CPU {
     u16 pc = 0x0000;     // Program Counter
     Status stat = 0x00;  // Status flags
 
-    Bus *bus = nullptr;
+    Bus *m_Bus = nullptr;
 
     /*  *** Read & Write from the bus *** */
-    void write(u16 addr, u8 data);
-    u8 read(u16 addr);
+    void Write(u16 addr, u8 data);
+    u8 Read(u16 addr);
 
     struct Instruction {
         char name[4];  // 3 + null byte
@@ -143,7 +147,7 @@ class CPU {
         u8 cycles = 0;
     };
 
-    std::vector<Instruction> lookup;
+    std::vector<Instruction> m_Lookup;
 
 #define UPDATE_Z(R) stat.Z = (R) == 0x00
 #define UPDATE_N(R) stat.N = (R)&0x80

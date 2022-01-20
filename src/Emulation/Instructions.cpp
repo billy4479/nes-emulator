@@ -34,10 +34,10 @@ u8 CPU::ASL() {
     stat.C = tmp & 0xFF00;
     UPDATE_NZ((tmp & 0x00FF));
 
-    if (lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[opcode].addrmode == &CPU::IMP)
         a = tmp & 0x00FF;
     else
-        write(addrAbs, tmp & 0x00FF);
+        Write(addrAbs, tmp & 0x00FF);
     return 0;
 }
 
@@ -136,17 +136,17 @@ u8 CPU::BRK() {
     pc++;
 
     stat.I = 1;
-    write(0x0100 + sp, (pc >> 8) & 0x00FF);
+    Write(0x0100 + sp, (pc >> 8) & 0x00FF);
     sp--;
-    write(0x0100 + sp, pc & 0x00FF);
+    Write(0x0100 + sp, pc & 0x00FF);
     sp--;
 
     stat.B = 1;
-    write(0x0100 + sp, stat);
+    Write(0x0100 + sp, stat);
     sp--;
     stat.B = 0;
 
-    pc = (u16)read(0xFFFE) | ((u16)read(0xFFFE) << 8);
+    pc = (u16)Read(0xFFFE) | ((u16)Read(0xFFFE) << 8);
     return 0;
 }
 
@@ -231,7 +231,7 @@ u8 CPU::CPY() {
 u8 CPU::DEC() {
     fetch();
     u8 tmp = fetched - 1;
-    write(addrAbs, tmp);
+    Write(addrAbs, tmp);
     UPDATE_NZ(tmp);
     return 0;
 }
@@ -262,7 +262,7 @@ u8 CPU::EOR() {
 u8 CPU::INC() {
     fetch();
     u16 tmp = ++fetched;
-    write(addrAbs, tmp & 0x00FF);
+    Write(addrAbs, tmp & 0x00FF);
     UPDATE_NZ((tmp & 0x00FF));
     return 0;
 }
@@ -291,9 +291,9 @@ u8 CPU::JMP() {
 u8 CPU::JSR() {
     pc--;
 
-    write(0x0100 + sp, (pc >> 8) & 0x00FF);
+    Write(0x0100 + sp, (pc >> 8) & 0x00FF);
     sp--;
-    write(0x0100 + sp, pc & 0x00FF);
+    Write(0x0100 + sp, pc & 0x00FF);
     sp--;
 
     pc = addrAbs;
@@ -330,10 +330,10 @@ u8 CPU::LSR() {
     stat.C = fetched & 0x0001;
     u8 tmp = fetched >> 1;
     UPDATE_NZ(tmp);
-    if (lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[opcode].addrmode == &CPU::IMP)
         a = tmp;
     else
-        write(addrAbs, tmp);
+        Write(addrAbs, tmp);
     return 0;
 }
 
@@ -364,7 +364,7 @@ u8 CPU::ORA() {
 
 // Push A to stack
 u8 CPU::PHA() {
-    write(0x100 + sp, a);
+    Write(0x100 + sp, a);
     sp--;
     return 0;
 }
@@ -375,7 +375,7 @@ u8 CPU::PHP() {
     tmp.B = 1;
     tmp.U = 1;
     // Note: break flag is set to 1 before push
-    write(0x0100 + sp, tmp);
+    Write(0x0100 + sp, tmp);
 
     stat.B = 0;
     stat.U = 0;
@@ -385,7 +385,7 @@ u8 CPU::PHP() {
 
 // Pop A from stack
 u8 CPU::PLA() {
-    a = read(0x100 + ++sp);
+    a = Read(0x100 + ++sp);
     stat.Z = a == 0x00;
     stat.N = a & 0x80;
     return 0;
@@ -394,7 +394,7 @@ u8 CPU::PLA() {
 // Pop Status Register
 u8 CPU::PLP() {
     sp++;
-    stat = read(0x0100 + sp);
+    stat = Read(0x0100 + sp);
     stat.U = 1;
     return 0;
 }
@@ -406,10 +406,10 @@ u8 CPU::ROL() {
     UPDATE_NZ(tmp);
     stat.C = tmp & 0xFF00;
 
-    if (lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[opcode].addrmode == &CPU::IMP)
         a = tmp & 0x00FF;
     else
-        write(addrAbs, tmp & 0x00FF);
+        Write(addrAbs, tmp & 0x00FF);
 
     return 0;
 }
@@ -421,31 +421,31 @@ u8 CPU::ROR() {
     UPDATE_NZ(tmp);
     stat.C = fetched & 0x01;
 
-    if (lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[opcode].addrmode == &CPU::IMP)
         a = tmp & 0x00FF;
     else
-        write(addrAbs, tmp & 0x00FF);
+        Write(addrAbs, tmp & 0x00FF);
 
     return 0;
 }
 
 // Return from interrupt
 u8 CPU::RTI() {
-    stat = read(0x0100 + ++sp);
+    stat = Read(0x0100 + ++sp);
     stat.B = 0;
     stat.U = 0;
 
-    pc = (u16)read(0x0100 + ++sp);
-    pc = (u16)read(0x0100 + ++sp) << 8;
+    pc = (u16)Read(0x0100 + ++sp);
+    pc = (u16)Read(0x0100 + ++sp) << 8;
     return 0;
 }
 
 // Return from Subroutine
 u8 CPU::RTS() {
     sp++;
-    pc = (u16)read(0x0100 + sp);
+    pc = (u16)Read(0x0100 + sp);
     sp++;
-    pc |= (u16)read(0x0100 + sp) << 8;
+    pc |= (u16)Read(0x0100 + sp) << 8;
 
     pc++;
     return 0;
@@ -488,19 +488,19 @@ u8 CPU::SEI() {
 
 // Store Accumulator
 u8 CPU::STA() {
-    write(addrAbs, a);
+    Write(addrAbs, a);
     return 0;
 }
 
 // Store X
 u8 CPU::STX() {
-    write(addrAbs, x);
+    Write(addrAbs, x);
     return 0;
 }
 
 // Store Y
 u8 CPU::STY() {
-    write(addrAbs, y);
+    Write(addrAbs, y);
     return 0;
 }
 

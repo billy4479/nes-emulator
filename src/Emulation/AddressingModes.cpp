@@ -19,7 +19,7 @@ u8 CPU::IMM() {
 // Addressing Mode: Zero Page
 // Read at page 0 the last byte at PC
 u8 CPU::ZP0() {
-    addrAbs = read(pc++);
+    addrAbs = Read(pc++);
     addrAbs &= 0x00FF;
     return 0;
 }
@@ -27,7 +27,7 @@ u8 CPU::ZP0() {
 // Addressing Mode: Zero Page, X
 // Read at page 0 the last byte at PC + X
 u8 CPU::ZPX() {
-    addrAbs = read((pc++) + x);
+    addrAbs = Read((pc++) + x);
     addrAbs &= 0x00FF;
     return 0;
 }
@@ -35,15 +35,15 @@ u8 CPU::ZPX() {
 // Addressing Mode: Zero Page, Y
 // Read at page 0 the last byte at PC + Y
 u8 CPU::ZPY() {
-    addrAbs = read((pc++) + y);
+    addrAbs = Read((pc++) + y);
     addrAbs &= 0x00FF;
     return 0;
 }
 
 // Addressing Mode: Absolute
 u8 CPU::ABS() {
-    u16 lo = read(pc++);
-    u16 hi = read(pc++);
+    u16 lo = Read(pc++);
+    u16 hi = Read(pc++);
 
     addrAbs =
         (hi << 8) | lo;  // Combining the 2 read bytes into a 16bit address
@@ -52,8 +52,8 @@ u8 CPU::ABS() {
 
 // Addressing Mode: Absolute + X
 u8 CPU::ABX() {
-    u16 lo = read(pc++);
-    u16 hi = read(pc++);
+    u16 lo = Read(pc++);
+    u16 hi = Read(pc++);
 
     addrAbs = (hi << 8) | lo;
     addrAbs += x;
@@ -65,8 +65,8 @@ u8 CPU::ABX() {
 
 // Addressing Mode: Absolute + Y
 u8 CPU::ABY() {
-    u16 lo = read(pc++);
-    u16 hi = read(pc++);
+    u16 lo = Read(pc++);
+    u16 hi = Read(pc++);
 
     addrAbs = (hi << 8) | lo;
     addrAbs += x;
@@ -79,8 +79,8 @@ u8 CPU::ABY() {
 // Addressing Mode: Indirect
 // Used only by JMP, works like a pointer
 u8 CPU::IND() {
-    u16 lo = read(pc++);
-    u16 hi = read(pc++);
+    u16 lo = Read(pc++);
+    u16 hi = Read(pc++);
 
     u16 ptr = (hi << 8) | lo;
 
@@ -90,10 +90,10 @@ u8 CPU::IND() {
     // from the next page is wrapped around and read from the first address
     // on the same page.
     if (lo == 0x00FF)
-        addrAbs = (read(ptr & 0xFF00) << 8 | read(ptr));
+        addrAbs = (Read(ptr & 0xFF00) << 8 | Read(ptr));
     else
         // Behave normally
-        addrAbs = (read(ptr + 1) << 8 | read(ptr));  // Read at address
+        addrAbs = (Read(ptr + 1) << 8 | Read(ptr));  // Read at address
 
     return 0;
 }
@@ -102,10 +102,10 @@ u8 CPU::IND() {
 // Read a byte at PC and sums it with the x register.
 // The result is the address of the actual value on the zeroth page.
 u8 CPU::IZX() {
-    u8 ptr = read(pc++);
+    u8 ptr = Read(pc++);
 
-    u16 lo = read(((u16)ptr + (u16)x) & 0x00FF);
-    u16 hi = read(((u16)ptr + 1 + (u16)x) & 0x00FF);
+    u16 lo = Read(((u16)ptr + (u16)x) & 0x00FF);
+    u16 hi = Read(((u16)ptr + 1 + (u16)x) & 0x00FF);
 
     addrAbs = (hi << 8) | lo;
 
@@ -114,10 +114,10 @@ u8 CPU::IZX() {
 
 // Indirect Addressing of the zeroth page with Y offset (to the address)
 u8 CPU::IZY() {
-    u16 ptr = read(pc++);
+    u16 ptr = Read(pc++);
 
-    u16 lo = read(ptr & 0x00FF);
-    u16 hi = read((ptr + 1) & 0x00FF);
+    u16 lo = Read(ptr & 0x00FF);
+    u16 hi = Read((ptr + 1) & 0x00FF);
 
     addrAbs = (hi << 8) | lo;
     addrAbs += y;
@@ -130,7 +130,7 @@ u8 CPU::IZY() {
 
 // Addressing Mode: Relative
 u8 CPU::REL() {
-    addrRel = read(pc++);
+    addrRel = Read(pc++);
 
     // The read byte is signed: if it's negative we set the first byte to FF
     // to be recognized later

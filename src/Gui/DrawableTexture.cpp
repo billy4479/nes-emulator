@@ -22,8 +22,11 @@ namespace GUI {
 #define TO_PIXEL_COORDS(x, y) y*((u32)m_Surface->pitch / sizeof(u32)) + x
 
 void DrawableTexture::PutPixel(glm::ivec2 position, const Color& c) {
-    DO_WITH_PIXELS(pixels[TO_PIXEL_COORDS((u32)position.x, (u32)position.y)] =
-                       c;)
+    auto coords = TO_PIXEL_COORDS((u32)position.x, (u32)position.y);
+    if (u32(m_Surface->h * m_Surface->w) < coords) return;
+
+    DO_WITH_PIXELS(pixels[coords] = c;);
+
     if (m_Texture != nullptr) SDL_DestroyTexture(m_Texture);
     m_Texture = nullptr;
 }

@@ -1,12 +1,12 @@
 #include "Renderer.hpp"
 
 #include <SDL_render.h>
+#include <SDL_surface.h>
 #include <SDL_video.h>
 
 namespace GUI {
 
-Renderer::Renderer(std::string_view name, glm::ivec2 size)
-    : m_EmulatorScreen(size) {
+Renderer::Renderer(std::string_view name, glm::ivec2 size) {
     assert(m_Renderer == nullptr);
 
     m_Window = SDL_CreateWindow(name.data(), SDL_WINDOWPOS_UNDEFINED,
@@ -27,10 +27,7 @@ SDL_Texture* Renderer::Convert(SDL_Surface* surface) {
     return SDL_CreateTextureFromSurface(m_Renderer, surface);
 }
 
-void Renderer::RenderToScreen() {
-    DrawTexture(m_EmulatorScreen.Finalize(*this), {0, 0}, {1, 1});
-    SDL_RenderPresent(m_Renderer);
-}
+void Renderer::RenderToScreen() { SDL_RenderPresent(m_Renderer); }
 
 static const glm::ivec2 CenterPointToCoords(const CenterPoint& center,
                                             SDL_Rect& dRect) {
@@ -99,5 +96,25 @@ void Renderer::DrawTexture(SDL_Texture* texture, glm::ivec2 position,
                      &rotationCenterPointSDL, (SDL_RendererFlip)flip);
 }
 
-GUI::DrawableTexture& Renderer::GetEmulatorScreen() { return m_EmulatorScreen; }
+void Renderer::DrawTexture(DrawableTexture& texture, glm::ivec2 position,
+                           glm::vec2 scale, f32 rotation, Color tint,
+                           CenterPoint anchor, CenterPoint rotationCenter) {
+    DrawTexture(texture.Finalize(*this), position, scale, rotation, tint,
+                anchor, rotationCenter);
+}
+
+void Renderer::DrawText(Label& label, glm::ivec2 position, glm::vec2 scale,
+                        f32 rotation, Color tint, CenterPoint anchor,
+                        CenterPoint rotationCenter) {
+    if (label.m_Texture == nullptr) {
+        auto* surface = TTF_RenderText_Blended(
+            label.m_Font, label.m_Content.c_str(), label.m_Color);
+        label.m_Texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
+        SDL_FreeSurface(surface);
+    }
+
+    DrawTexture(label.m_Texture, position, scale, rotation, tint, anchor,
+                rotationCenter);
+}
+
 }  // namespace GUI

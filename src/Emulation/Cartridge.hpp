@@ -26,8 +26,8 @@ class Cartridge {
     std::shared_ptr<Mappers::Mapper> m_Mapper;
 
     u8 m_MapperID = 0;
-    u8 m_PRGBanks = 0;
-    u8 m_CHRBanks = 0;
+    u8 m_ProgramMemoryBanks = 0;
+    u8 m_PatternMemoryBanks = 0;
 };
 
 }  // namespace Emulation

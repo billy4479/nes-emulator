@@ -2,14 +2,13 @@
 
 #include <SDL2/SDL.h>
 
-#include <stdexcept>
+#include <glm/ext/vector_int2.hpp>
 
 #include "Common/AssetManager.hpp"
 #include "Common/Common.hpp"
 #include "Common/EventHandler.hpp"
 #include "Emulation/Bus.hpp"
 #include "Gui/Renderer.hpp"
-#include "glm/ext/vector_int2.hpp"
 
 class Application {
    public:
@@ -26,8 +25,6 @@ class Application {
 
     static constexpr i32 FPS = 60;
     static constexpr i32 frameDelay = 1000 / FPS;
-
-    i32 m_Height, m_Width;
 
     AssetManager m_AssetManager;
     GUI::Renderer m_Renderer;

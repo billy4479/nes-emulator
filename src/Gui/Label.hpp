@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "../Application.hpp"
+#include "../Common/Color.hpp"
 #include "../Common/Common.hpp"
 
 namespace GUI {
@@ -26,6 +26,8 @@ class Label {
     TTF_Font* m_Font = nullptr;
     SDL_Texture* m_Texture = nullptr;
     Color m_Color = Color::white;
+
+    friend class Renderer;
 };
 
 }  // namespace GUI

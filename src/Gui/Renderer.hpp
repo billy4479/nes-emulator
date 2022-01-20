@@ -9,6 +9,7 @@
 #include "../Common/Color.hpp"
 #include "../Common/Common.hpp"
 #include "DrawableTexture.hpp"
+#include "Label.hpp"
 
 namespace GUI {
 
@@ -31,17 +32,24 @@ class Renderer {
 
     void Clear();
     void RenderToScreen();
-    void DrawTexture(SDL_Texture *texture, glm::ivec2 position, glm::vec2 scale,
-                     f32 rotation = 0, Color tint = Color::white,
+    void DrawTexture(SDL_Texture *texture, glm::ivec2 position,
+                     glm::vec2 scale = {1, 1}, f32 rotation = 0,
+                     Color tint = Color::white,
                      CenterPoint anchor = CenterPoint::TOP_LEFT,
                      CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
-    DrawableTexture &GetEmulatorScreen();
+    void DrawTexture(DrawableTexture &texture, glm::ivec2 position,
+                     glm::vec2 scale = {1, 1}, f32 rotation = 0,
+                     Color tint = Color::white,
+                     CenterPoint anchor = CenterPoint::TOP_LEFT,
+                     CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
+    void DrawText(Label &label, glm::ivec2 position, glm::vec2 scale = {1, 1},
+                  f32 rotation = 0, Color tint = Color::white,
+                  CenterPoint anchor = CenterPoint::TOP_LEFT,
+                  CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
 
    private:
     SDL_Renderer *m_Renderer = nullptr;
     SDL_Window *m_Window = nullptr;
-
-    DrawableTexture m_EmulatorScreen;
 
     SDL_Texture *Convert(SDL_Surface *surface);
     friend class DrawableTexture;

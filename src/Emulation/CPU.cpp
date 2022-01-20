@@ -137,24 +137,24 @@ CPU::CPU() {
         {"INC", &a::INC, &a::ABX, 7}, {"???", &a::XXX, &a::IMP, 7},
     };
 
-    lookup = std::vector<Instruction>(
+    m_Lookup = std::vector<Instruction>(
         inst, inst + sizeof(inst) / sizeof(Instruction));
 }
 
 CPU::~CPU() = default;
 
-void CPU::write(u16 addr, u8 data) { bus->CPUWrite(addr, data); }
-u8 CPU::read(u16 addr) { return bus->CPURead(addr, false); }
+void CPU::Write(u16 addr, u8 data) { m_Bus->CPUWrite(addr, data); }
+u8 CPU::Read(u16 addr) { return m_Bus->CPURead(addr, false); }
 
-void CPU::clock() {
+void CPU::Clock() {
     if (cycles == 0) {
-        opcode = read(pc++);
+        opcode = Read(pc++);
 
-        cycles = lookup[opcode].cycles;
+        cycles = m_Lookup[opcode].cycles;
 
-        u8 additionalCycle1 = (this->*lookup[opcode].addrmode)();
+        u8 additionalCycle1 = (this->*m_Lookup[opcode].addrmode)();
 
-        u8 additionalCycle2 = (this->*lookup[opcode].operation)();
+        u8 additionalCycle2 = (this->*m_Lookup[opcode].operation)();
 
         cycles += (additionalCycle1 & additionalCycle2);
     }
@@ -163,19 +163,19 @@ void CPU::clock() {
 }
 
 u8 CPU::fetch() {
-    if (lookup[opcode].addrmode != &CPU::IMP) fetched = read(addrAbs);
+    if (m_Lookup[opcode].addrmode != &CPU::IMP) fetched = Read(addrAbs);
 
     return addrAbs;
 }
 
-void CPU::reset() {
+void CPU::Reset() {
     a = x = y = 0;
     sp = 0xFD;
     stat = 0x00;
 
     addrAbs = 0xFFFC;
-    u16 lo = read(addrAbs);
-    u16 hi = read(addrAbs + 1);
+    u16 lo = Read(addrAbs);
+    u16 hi = Read(addrAbs + 1);
     pc = (hi << 8) | lo;
 
     addrRel = 0x0000;
@@ -185,45 +185,45 @@ void CPU::reset() {
     cycles = 8;
 }
 
-void CPU::irq() {
+void CPU::IRQ() {
     if (!stat.I) {
         // Push some registers onto the stack
-        write(0x100 + sp, (pc >> 8) & 0x00FF);
+        Write(0x100 + sp, (pc >> 8) & 0x00FF);
         sp--;
-        write(0x100 + sp, pc & 0x00FF);
+        Write(0x100 + sp, pc & 0x00FF);
         sp--;
 
         stat.B = 0;
         stat.U = 1;
         stat.I = 1;
-        write(0x100 + sp, stat);
+        Write(0x100 + sp, stat);
         sp--;
 
         addrAbs = 0xFFFE;
-        u16 lo = read(addrAbs);
-        u16 hi = read(addrAbs + 1);
+        u16 lo = Read(addrAbs);
+        u16 hi = Read(addrAbs + 1);
         pc = (hi << 8) | lo;
 
         cycles = 7;
     }
 }
 
-void CPU::nmi() {
+void CPU::NMI() {
     // Push some registers onto the stack
-    write(0x100 + sp, (pc >> 8) & 0x00FF);
+    Write(0x100 + sp, (pc >> 8) & 0x00FF);
     sp--;
-    write(0x100 + sp, pc & 0x00FF);
+    Write(0x100 + sp, pc & 0x00FF);
     sp--;
 
     stat.B = 0;
     stat.U = 1;
     stat.I = 1;
-    write(0x100 + sp, stat);
+    Write(0x100 + sp, stat);
     sp--;
 
     addrAbs = 0xFFFE;
-    u16 lo = read(addrAbs);
-    u16 hi = read(addrAbs + 1);
+    u16 lo = Read(addrAbs);
+    u16 hi = Read(addrAbs + 1);
     pc = (hi << 8) | lo;
 
     cycles = 7;

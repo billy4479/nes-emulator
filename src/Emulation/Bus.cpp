@@ -11,8 +11,7 @@ namespace Emulation {
 
 Bus::Bus() {
     // Clear ram to 0;
-    for (auto &i : m_CPURam) i = 0x00;
-
+    m_CPURam.fill(0);
     cpu.ConnectToBus(this);
 }
 
@@ -20,15 +19,17 @@ Bus::~Bus() {}
 
 void Bus::CPUWrite(u16 addr, u8 data) {
     if (m_Cartridge->CPUWrite(addr, data)) {
-    }
-
-    else if (addr <= 0x1FFF)
+    } else if (addr <= 0x1FFF) {
+        // CPU's RAM is from 0x0000 to 0x1FFF
+        // but since there are only 2KB of RAM we mirror it.
         m_CPURam[addr & 0x07FF] = data;
 
-    else if (addr >= 0x2000 && addr <= 0x3FFF)
+    } else if (addr >= 0x2000 && addr <= 0x3FFF) {
+        // The PPU is from 0x2000 to 0x3FFF
+        // but the interface is only 8 byte, so we mirror it.
         ppu.CPUWrite(addr & 0x0007, data);
 
-    else
+    } else
         throw std::out_of_range("Specified address is outside the bus' range.");
 }
 u8 Bus::CPURead(u16 addr, bool readOnly) {
@@ -43,9 +44,10 @@ u8 Bus::CPURead(u16 addr, bool readOnly) {
     else if (addr >= 0x2000 && addr <= 0x3FFF)
         data = ppu.CPURead(addr & 0x0007, readOnly);
 
-    else
-        throw std::out_of_range("Specified address is outside the bus' range.");
-
+    else {
+        dbg_print("Specified address %x is outside the bus' range.\n", addr);
+        // assert(false);
+    }
     return data;
 }
 
@@ -56,12 +58,12 @@ void Bus::InsertCartridge(const std::shared_ptr<Cartridge> &cartridge) {
 
 void Bus::Clock() {
     ppu.Clock();
-    if (m_ClockCounter % 3 == 0) cpu.clock();
+    if (m_ClockCounter % 3 == 0) cpu.Clock();
     m_ClockCounter++;
 }
 
 void Bus::Reset() {
-    cpu.reset();
+    cpu.Reset();
     m_ClockCounter = 0;
 }
 

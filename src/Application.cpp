@@ -2,14 +2,17 @@
 
 #include <SDL2/SDL_ttf.h>
 
+#include <memory>
+
 #include "Common/Common.hpp"
+#include "Common/Costants.hpp"
+#include "Emulation/CPU.hpp"
 #include "Gui/Label.hpp"
 #include "glm/ext/vector_int2.hpp"
 
 Application::Application(glm::ivec2 size) : m_Renderer("NES-Emulator", size) {
-    if (SDL_Init(SDL_INIT_EVERYTHING))
-        throw std::runtime_error("SDL failed to initialize.");
-    if (TTF_Init()) throw std::runtime_error("SDL_ttf failed to initialize.");
+    assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
+    assert(TTF_Init() == 0);
 
     m_AssetManager.LoadFont(
         "JetBrains Mono Regular Nerd Font Complete Mono.ttf", "JetBrains Mono",
@@ -28,41 +31,29 @@ void Application::Run() {
     assert(!isRunning);
     isRunning = true;
 
-    m_Renderer.Clear();
+    m_Nes.InsertCartridge(std::make_shared<Emulation::Cartridge>(
+        "/home/billy/code/nes-emulator/roms/nestest.nes"));
+    m_Nes.Reset();
 
     u32 frameStart;
     i32 frameTime;
 
-    // i32 count = 0;
-    // i32 line = 0;
+    auto scale = glm::ivec2{1, 1} * PIXEL_SCALE_FACTOR;
 
-    GUI::Label l("Test .-.", m_AssetManager.GetFont("JetBrains Mono"));
-    u16 h = 0;
-    // auto fg = Color(0, 153, 0);
     while (isRunning) {
-        m_Renderer.Clear();
-
         frameStart = SDL_GetTicks();
 
+        m_Renderer.Clear();
         m_EventHandler.HandleEvents();
 
         // Logic here
 
-        m_Renderer.GetEmulatorScreen().Clear(Color::hsl(h++, 0.5, 0.5));
+        do {
+            m_Nes.Clock();
+        } while (!m_Nes.ppu.m_FrameComplete);
 
-        // for (i32 i = 0; i < m_Width; i++)
-        //     m_Renderer.PutPixel(i, count, fg);
-        // count++;
-        // if (count >= m_Height) {
-        //     count = 0;
-        //     fg = Color::hsl(180, 100, 100);
-        // }
-
-        // m_Renderer.PutPixel(count++, line, fg);
-        // if (count >= m_Width) {
-        //     line++;
-        //     count = 0;
-        // }
+        m_Nes.ppu.m_FrameComplete = false;
+        m_Renderer.DrawTexture(m_Nes.ppu.GetScreenTexture(), {0, 0}, scale);
 
         // End of logic
 

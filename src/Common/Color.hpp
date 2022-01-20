@@ -5,6 +5,7 @@
 
 struct Color {
    public:
+    Color() : Color(0, 0, 0, 0xff) {}
     Color(u8 r, u8 g, u8 b, u8 a = 0xff) : r(r), g(g), b(b), a(a) {}
     inline operator u32() const {
         u32 res = ((u32)r << 24) | ((u32)g << 16) | ((u32)b << 8) | a;
