@@ -8,6 +8,7 @@
 #include "Common/Common.hpp"
 #include "Common/Costants.hpp"
 #include "Emulation/CPU.hpp"
+#include "Gui/Disassembler.hpp"
 #include "Gui/Label.hpp"
 #include "glm/ext/vector_int2.hpp"
 
@@ -18,7 +19,7 @@ Application::Application(glm::ivec2 size)
 
     m_AssetManager.LoadFont(
         "JetBrains Mono Regular Nerd Font Complete Mono.ttf", "JetBrains Mono",
-        32);
+        28);
 
     // dbg_print("%s", m_Nes.DumpAsHex(0x8000, 0x00F0).c_str());
 }
@@ -36,6 +37,8 @@ void Application::Run() {
     m_Nes.LoadAndInsertCartridge("nestest.nes", m_AssetManager);
     m_Nes.Reset();
 
+    auto disassembler = Disassembler(m_Nes, m_Renderer, m_AssetManager);
+
     auto scale = glm::ivec2{1, 1} * PIXEL_SCALE_FACTOR;
 
     auto fpsLabel = GUI::Label("", m_AssetManager.GetFont("JetBrains Mono"));
@@ -50,17 +53,21 @@ void Application::Run() {
 
         do {
             m_Nes.Clock();
-        } while (!m_Nes.ppu.m_FrameComplete);
+        } while (!m_Nes.m_PPU.m_FrameComplete);
 
-        m_Nes.ppu.m_FrameComplete = false;
-        m_Renderer.DrawTexture(m_Nes.ppu.GetScreenTexture(), {0, 0}, scale);
+        m_Nes.m_PPU.m_FrameComplete = false;
+        m_Renderer.DrawTexture(m_Nes.m_PPU.GetScreenTexture(), {0, 0}, scale);
 
+#if 0
         {
             std::stringstream ss;
             ss << "FPS: " << m_FPSManager.GetActualFPS();
             fpsLabel.SetText(ss.str());
             m_Renderer.DrawText(fpsLabel, {NES_EMULATOR_SCREEN_SIZE.x + 10, 0});
         }
+#endif
+
+        disassembler.Render();
 
         // End of logic
 

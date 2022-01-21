@@ -4,15 +4,15 @@ namespace Emulation {
 
 // Addition with Carry
 u8 CPU::ADC() {
-    fetch();
+    Fetch();
 
     // Sum data (16-bit due to the carry)
-    u16 tmp = (u16)a + (u16)fetched + (u16)stat.C;
+    u16 tmp = (u16)a + (u16)m_Fetched + (u16)stat.C;
 
     stat.C = tmp > 255;
     UPDATE_NZ((tmp & 0x00FF));
     stat.V =
-        (~((u16)a ^ (u16)fetched) & ((u16)a ^ tmp) &
+        (~((u16)a ^ (u16)m_Fetched) & ((u16)a ^ tmp) &
          0x0080);  // See
                    // https://github.com/OneLoneCoder/olcNES/blob/master/Part%232%20-%20CPU/olc6502.cpp#L659
     a = tmp & 0x00FF;
@@ -21,35 +21,35 @@ u8 CPU::ADC() {
 
 // Logical AND
 u8 CPU::AND() {
-    fetch();
-    a &= fetched;
+    Fetch();
+    a &= m_Fetched;
     UPDATE_NZ(a);
     return 1;
 }
 
 // Arithmetic Shift Left
 u8 CPU::ASL() {
-    fetch();
-    u16 tmp = (u16)fetched << 1;
+    Fetch();
+    u16 tmp = (u16)m_Fetched << 1;
     stat.C = tmp & 0xFF00;
     UPDATE_NZ((tmp & 0x00FF));
 
-    if (m_Lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[m_Opcode].addrmode == &CPU::IMP)
         a = tmp & 0x00FF;
     else
-        Write(addrAbs, tmp & 0x00FF);
+        Write(m_AddrAbs, tmp & 0x00FF);
     return 0;
 }
 
 // Branch if the carry bit is clear
 u8 CPU::BCC() {
     if (stat.C == 0) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -57,12 +57,12 @@ u8 CPU::BCC() {
 // Branch if the carry bit is set
 u8 CPU::BCS() {
     if (stat.C == 1) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -70,20 +70,20 @@ u8 CPU::BCS() {
 // Branch if equal
 u8 CPU::BEQ() {
     if (stat.Z == 1) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
 
 // Bit Test
 u8 CPU::BIT() {
-    fetch();
-    u8 tmp = a & fetched;
+    Fetch();
+    u8 tmp = a & m_Fetched;
 
     stat.Z = tmp == 0x00;
     stat.N = tmp & (1 << 7);
@@ -95,12 +95,12 @@ u8 CPU::BIT() {
 // Branch if Minus
 u8 CPU::BMI() {
     if (stat.N == 1) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -108,12 +108,12 @@ u8 CPU::BMI() {
 // Branch if Not Equal
 u8 CPU::BNE() {
     if (stat.Z == 0) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -121,12 +121,12 @@ u8 CPU::BNE() {
 // Branch if Positive
 u8 CPU::BPL() {
     if (stat.N == 0) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -153,12 +153,12 @@ u8 CPU::BRK() {
 // Branch if Overflow Clear
 u8 CPU::BVC() {
     if (stat.V == 0) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -166,12 +166,12 @@ u8 CPU::BVC() {
 // Branch if Overflow Set
 u8 CPU::BVS() {
     if (stat.V == 1) {
-        cycles++;
-        addrAbs = pc + addrRel;
+        m_CyclesLeft++;
+        m_AddrAbs = pc + m_AddrRel;
 
-        if ((addrAbs & 0xFF00) != (pc & 0xFF00)) cycles++;
+        if ((m_AddrAbs & 0xFF00) != (pc & 0xFF00)) m_CyclesLeft++;
 
-        pc = addrAbs;
+        pc = m_AddrAbs;
     }
     return 0;
 }
@@ -202,36 +202,36 @@ u8 CPU::CLV() {
 
 // Compare accumulator
 u8 CPU::CMP() {
-    fetch();
-    u16 tmp = (u16)a - (u16)fetched;
-    stat.C = a >= fetched;
+    Fetch();
+    u16 tmp = (u16)a - (u16)m_Fetched;
+    stat.C = a >= m_Fetched;
     UPDATE_NZ((tmp & 0x00FF));
     return 1;
 }
 
 // Compare X Register
 u8 CPU::CPX() {
-    fetch();
-    u16 tmp = (u16)x - (u16)fetched;
-    stat.C = x >= fetched;
+    Fetch();
+    u16 tmp = (u16)x - (u16)m_Fetched;
+    stat.C = x >= m_Fetched;
     UPDATE_NZ((tmp & 0x00FF));
     return 1;
 }
 
 // Compare Y Register
 u8 CPU::CPY() {
-    fetch();
-    u16 tmp = (u16)y - (u16)fetched;
-    stat.C = y >= fetched;
+    Fetch();
+    u16 tmp = (u16)y - (u16)m_Fetched;
+    stat.C = y >= m_Fetched;
     UPDATE_NZ((tmp & 0x00FF));
     return 1;
 }
 
 // Decrement Memory
 u8 CPU::DEC() {
-    fetch();
-    u8 tmp = fetched - 1;
-    Write(addrAbs, tmp);
+    Fetch();
+    u8 tmp = m_Fetched - 1;
+    Write(m_AddrAbs, tmp);
     UPDATE_NZ(tmp);
     return 0;
 }
@@ -252,17 +252,17 @@ u8 CPU::DEY() {
 
 // Bitwise XOR
 u8 CPU::EOR() {
-    fetch();
-    a ^= fetched;
+    Fetch();
+    a ^= m_Fetched;
     UPDATE_NZ(a);
     return 1;
 }
 
 // Increment Memory
 u8 CPU::INC() {
-    fetch();
-    u16 tmp = ++fetched;
-    Write(addrAbs, tmp & 0x00FF);
+    Fetch();
+    u16 tmp = ++m_Fetched;
+    Write(m_AddrAbs, tmp & 0x00FF);
     UPDATE_NZ((tmp & 0x00FF));
     return 0;
 }
@@ -283,7 +283,7 @@ u8 CPU::INY() {
 
 // Jump to Location
 u8 CPU::JMP() {
-    pc = addrAbs;
+    pc = m_AddrAbs;
     return 0;
 }
 
@@ -296,44 +296,44 @@ u8 CPU::JSR() {
     Write(0x0100 + sp, pc & 0x00FF);
     sp--;
 
-    pc = addrAbs;
+    pc = m_AddrAbs;
     return 0;
 }
 
 // Load accumulator
 u8 CPU::LDA() {
-    fetch();
-    a = fetched;
+    Fetch();
+    a = m_Fetched;
     UPDATE_NZ(a);
     return 1;
 }
 
 // Load X register
 u8 CPU::LDX() {
-    fetch();
-    x = fetched;
+    Fetch();
+    x = m_Fetched;
     UPDATE_NZ(x);
     return 1;
 }
 
 // Load Y register
 u8 CPU::LDY() {
-    fetch();
-    y = fetched;
+    Fetch();
+    y = m_Fetched;
     UPDATE_NZ(y);
     return 1;
 }
 
 // Logical Shift Right
 u8 CPU::LSR() {
-    fetch();
-    stat.C = fetched & 0x0001;
-    u8 tmp = fetched >> 1;
+    Fetch();
+    stat.C = m_Fetched & 0x0001;
+    u8 tmp = m_Fetched >> 1;
     UPDATE_NZ(tmp);
-    if (m_Lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[m_Opcode].addrmode == &CPU::IMP)
         a = tmp;
     else
-        Write(addrAbs, tmp);
+        Write(m_AddrAbs, tmp);
     return 0;
 }
 
@@ -341,7 +341,7 @@ u8 CPU::NOP() {
     // Yay, illegal opcodes!
     // https://wiki.nesdev.com/w/index.php/CPU_unofficial_opcodes
 
-    switch (opcode) {
+    switch (m_Opcode) {
         case 0x1C:
         case 0x3C:
         case 0x5C:
@@ -356,8 +356,8 @@ u8 CPU::NOP() {
 
 // Bitwise Logic OR
 u8 CPU::ORA() {
-    fetch();
-    a |= fetched;
+    Fetch();
+    a |= m_Fetched;
     UPDATE_NZ(a);
     return 1;
 }
@@ -401,30 +401,30 @@ u8 CPU::PLP() {
 
 // Rotate Left
 u8 CPU::ROL() {
-    fetch();
-    u16 tmp = (fetched << 1) | stat.C;
+    Fetch();
+    u16 tmp = (m_Fetched << 1) | stat.C;
     UPDATE_NZ(tmp);
     stat.C = tmp & 0xFF00;
 
-    if (m_Lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[m_Opcode].addrmode == &CPU::IMP)
         a = tmp & 0x00FF;
     else
-        Write(addrAbs, tmp & 0x00FF);
+        Write(m_AddrAbs, tmp & 0x00FF);
 
     return 0;
 }
 
 // Rotate Right
 u8 CPU::ROR() {
-    fetch();
-    u16 tmp = (u16)(stat.C << 7) | (fetched >> 1);
+    Fetch();
+    u16 tmp = (u16)(stat.C << 7) | (m_Fetched >> 1);
     UPDATE_NZ(tmp);
-    stat.C = fetched & 0x01;
+    stat.C = m_Fetched & 0x01;
 
-    if (m_Lookup[opcode].addrmode == &CPU::IMP)
+    if (m_Lookup[m_Opcode].addrmode == &CPU::IMP)
         a = tmp & 0x00FF;
     else
-        Write(addrAbs, tmp & 0x00FF);
+        Write(m_AddrAbs, tmp & 0x00FF);
 
     return 0;
 }
@@ -454,9 +454,9 @@ u8 CPU::RTS() {
 // Subtraction with Carry
 u8 CPU::SBC() {
     // This is about the same as addition
-    fetch();
+    Fetch();
 
-    u16 value = ((u16)fetched) ^ 0x00FF;
+    u16 value = ((u16)m_Fetched) ^ 0x00FF;
 
     u16 tmp = (u16)a + value + (u16)stat.C;
 
@@ -488,19 +488,19 @@ u8 CPU::SEI() {
 
 // Store Accumulator
 u8 CPU::STA() {
-    Write(addrAbs, a);
+    Write(m_AddrAbs, a);
     return 0;
 }
 
 // Store X
 u8 CPU::STX() {
-    Write(addrAbs, x);
+    Write(m_AddrAbs, x);
     return 0;
 }
 
 // Store Y
 u8 CPU::STY() {
-    Write(addrAbs, y);
+    Write(m_AddrAbs, y);
     return 0;
 }
 

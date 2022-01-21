@@ -8,18 +8,21 @@ Label::Label(const std::string& text, TTF_Font* font, const Color& color)
     : m_Content(text), m_Font(font), m_Color(color) {}
 
 void Label::SetText(const std::string& text) {
+    if (m_Content == text) return;
     m_Content = text;
     SDL_DestroyTexture(m_Texture);
     m_Texture = nullptr;
 }
 
 void Label::SetFont(TTF_Font* font) {
+    if (m_Font == font) return;
     m_Font = font;
     SDL_DestroyTexture(m_Texture);
     m_Texture = nullptr;
 }
 
 void Label::SetColor(const Color& color) {
+    if (m_Color == color) return;
     m_Color = color;
     SDL_DestroyTexture(m_Texture);
     m_Texture = nullptr;

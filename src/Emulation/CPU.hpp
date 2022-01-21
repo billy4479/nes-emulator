@@ -3,6 +3,8 @@
 
 #include "../Common/Common.hpp"
 
+class Disassembler;
+
 namespace Emulation {
 
 // Foreward declaration to avoid circular inclusion
@@ -20,7 +22,7 @@ class CPU {
 
     void ConnectToBus(Bus *b) { m_Bus = b; }
 
-    bool IsComplete() { return cycles == 0; }
+    bool IsComplete() { return m_CyclesLeft == 0; }
 
     /*  *** OPCodes *** */
    private:
@@ -98,13 +100,14 @@ class CPU {
     u8 IZX();
     u8 IZY();
 
-    u8 fetch();         // Fetch data at the Program Counter
-    u8 fetched = 0x00;  // Data received from fetch()
+   private:
+    u8 Fetch();           // Fetch data at the Program Counter
+    u8 m_Fetched = 0x00;  // Data received from fetch()
 
-    u16 addrAbs = 0x0000;
-    u16 addrRel = 0x0000;
-    u8 opcode = 0x00;
-    u8 cycles = 0;  // Cycles left to finish the instruction
+    u16 m_AddrAbs = 0x0000;
+    u16 m_AddrRel = 0x0000;
+    u8 m_Opcode = 0x00;
+    u8 m_CyclesLeft = 0;  // Cycles left to finish the instruction
 
    private:
     /*  *** Status Flags *** */
@@ -154,6 +157,9 @@ class CPU {
 #define UPDATE_NZ(R) \
     UPDATE_Z(R);     \
     UPDATE_N(R);
+
+   private:
+    friend class ::Disassembler;
 };
 
 }  // namespace Emulation

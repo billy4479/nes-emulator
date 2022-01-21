@@ -19,11 +19,14 @@ class Bus {
     ~Bus();
 
     /*  *** Devices *** */
-    CPU cpu;
-    PPU ppu;
+    CPU m_CPU;
+    PPU m_PPU;
+
+   private:
     std::array<u8, 2048> m_CPURam;  // This is going to change
     std::shared_ptr<Cartridge> m_Cartridge;
 
+   public:
     /*  *** Read & Write ***  */
     void CPUWrite(u16 addr, u8 data);
     u8 CPURead(u16 addr, bool readOnly = false);

@@ -147,25 +147,25 @@ void CPU::Write(u16 addr, u8 data) { m_Bus->CPUWrite(addr, data); }
 u8 CPU::Read(u16 addr) { return m_Bus->CPURead(addr, false); }
 
 void CPU::Clock() {
-    if (cycles == 0) {
-        opcode = Read(pc++);
+    if (m_CyclesLeft == 0) {
+        m_Opcode = Read(pc++);
 
-        cycles = m_Lookup[opcode].cycles;
+        m_CyclesLeft = m_Lookup[m_Opcode].cycles;
 
-        u8 additionalCycle1 = (this->*m_Lookup[opcode].addrmode)();
+        u8 additionalCycle1 = (this->*m_Lookup[m_Opcode].addrmode)();
 
-        u8 additionalCycle2 = (this->*m_Lookup[opcode].operation)();
+        u8 additionalCycle2 = (this->*m_Lookup[m_Opcode].operation)();
 
-        cycles += (additionalCycle1 & additionalCycle2);
+        m_CyclesLeft += (additionalCycle1 & additionalCycle2);
     }
 
-    cycles--;
+    m_CyclesLeft--;
 }
 
-u8 CPU::fetch() {
-    if (m_Lookup[opcode].addrmode != &CPU::IMP) fetched = Read(addrAbs);
+u8 CPU::Fetch() {
+    if (m_Lookup[m_Opcode].addrmode != &CPU::IMP) m_Fetched = Read(m_AddrAbs);
 
-    return addrAbs;
+    return m_AddrAbs;
 }
 
 void CPU::Reset() {
@@ -173,16 +173,16 @@ void CPU::Reset() {
     sp = 0xFD;
     stat = 0x00;
 
-    addrAbs = 0xFFFC;
-    u16 lo = Read(addrAbs);
-    u16 hi = Read(addrAbs + 1);
+    m_AddrAbs = 0xFFFC;
+    u16 lo = Read(m_AddrAbs);
+    u16 hi = Read(m_AddrAbs + 1);
     pc = (hi << 8) | lo;
 
-    addrRel = 0x0000;
-    addrAbs = 0x0000;
-    fetched = 0x00;
+    m_AddrRel = 0x0000;
+    m_AddrAbs = 0x0000;
+    m_Fetched = 0x00;
 
-    cycles = 8;
+    m_CyclesLeft = 8;
 }
 
 void CPU::IRQ() {
@@ -199,12 +199,12 @@ void CPU::IRQ() {
         Write(0x100 + sp, stat);
         sp--;
 
-        addrAbs = 0xFFFE;
-        u16 lo = Read(addrAbs);
-        u16 hi = Read(addrAbs + 1);
+        m_AddrAbs = 0xFFFE;
+        u16 lo = Read(m_AddrAbs);
+        u16 hi = Read(m_AddrAbs + 1);
         pc = (hi << 8) | lo;
 
-        cycles = 7;
+        m_CyclesLeft = 7;
     }
 }
 
@@ -221,12 +221,12 @@ void CPU::NMI() {
     Write(0x100 + sp, stat);
     sp--;
 
-    addrAbs = 0xFFFE;
-    u16 lo = Read(addrAbs);
-    u16 hi = Read(addrAbs + 1);
+    m_AddrAbs = 0xFFFE;
+    u16 lo = Read(m_AddrAbs);
+    u16 hi = Read(m_AddrAbs + 1);
     pc = (hi << 8) | lo;
 
-    cycles = 7;
+    m_CyclesLeft = 7;
 }
 
 }  // namespace Emulation
