@@ -30,8 +30,9 @@ void Bus::CPUWrite(u16 addr, u8 data) {
         // but the interface is only 8 byte, so we mirror it.
         m_PPU.CPUWrite(addr & 0x0007, data);
 
-    } else
-        throw std::out_of_range("Specified address is outside the bus' range.");
+    } else {
+        // OUT OF RANGE
+    }
 }
 u8 Bus::CPURead(u16 addr, bool readOnly) const {
     u8 data = 0;

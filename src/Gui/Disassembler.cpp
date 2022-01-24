@@ -1,5 +1,6 @@
 #include "Disassembler.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <type_traits>
 
@@ -63,7 +64,10 @@ Disassembler::Disassembler(const Bus& bus, GUI::Renderer& renderer,
                       .Value = GUI::Label("", m_Font),
                   },
               },
-      }) {}
+      }) {
+    dbg_print("LOL\n");
+    Disassemble(0x0000, 0xFFFF);
+}
 
 void Disassembler::Render() {
     m_NextPosition = {NES_EMULATOR_SCREEN_SIZE.x + 15, 10};
@@ -76,7 +80,7 @@ void Disassembler::Render() {
 
 void Disassembler::CPUStatus() {
     m_Renderer.DrawText(m_CPURegisters.Status.StatusLabel, m_NextPosition);
-    m_NextPosition.x += 135;
+    m_NextPosition.x += charWidth * 9;
 
 #define DISPLAY_STATUS(i, name)                                             \
     {                                                                       \
@@ -120,76 +124,74 @@ void Disassembler::CPURegisters() {
 #undef DISPLAY_REGISTER
 }
 
-std::map<u16, std::string> Disassembler::Disassemble(u16 start, u16 end,
-                                                     const Bus& bus) {
-    std::map<u16, std::string> lines;
+void Disassembler::Disassemble(u16 start, u16 end) {
     u16 lineAddr = 0;
     u8 high = 0, low = 0, value = 0;
+    u32 addr = start;
 
-    for (auto addr = start; addr <= end; addr++) {
+    while (addr <= (u32)end) {
         lineAddr = addr;
         std::stringstream ss;
         ss << "0x" << ToHex(lineAddr) << " |  ";
 
-        u8 opcode = bus.CPURead(addr++, true);
-        ss << bus.m_CPU.m_Lookup[opcode].name << " - ";
+        u8 opcode = m_Bus.CPURead(addr++, true);
+        ss << m_Bus.m_CPU.m_Lookup[opcode].name << " - ";
 
-        const auto addrMode = bus.m_CPU.m_Lookup[opcode].addrmode;
+        const auto addrMode = m_Bus.m_CPU.m_Lookup[opcode].addrmode;
 
         if (addrMode == &CPU::IMP) {
             ss << "[IMP]";
         } else {
             ss << "$";
             if (addrMode == &CPU::IMM) {
-                value = bus.CPURead(addr++, true);
+                value = m_Bus.CPURead(addr++, true);
                 ss << ToHex(value) << " [IMM]";
             } else if (addrMode == &CPU::ZP0) {
-                low = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
                 high = 0x00;
                 ss << ToHex(low) << " [ZP0]";
             } else if (addrMode == &CPU::ZPX) {
-                low = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
                 high = 0x00;
                 ss << ToHex(low) << "+ X [ZPX]";
             } else if (addrMode == &CPU::ZPY) {
-                low = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
                 high = 0x00;
                 ss << ToHex(low) << "+ Y [ZPY]";
             } else if (addrMode == &CPU::IZX) {
-                low = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
                 high = 0x00;
                 ss << ToHex(low) << "+ X [IZX]";
             } else if (addrMode == &CPU::IZY) {
-                low = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
                 high = 0x00;
                 ss << ToHex(low) << "+ Y [IZY]";
             } else if (addrMode == &CPU::ABS) {
-                low = bus.CPURead(addr++, true);
-                high = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
+                high = m_Bus.CPURead(addr++, true);
                 ss << ToHex((u16)(high << 8) | low) << " [ABS]";
             } else if (addrMode == &CPU::ABX) {
-                low = bus.CPURead(addr++, true);
-                high = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
+                high = m_Bus.CPURead(addr++, true);
                 ss << ToHex((u16)(high << 8) | low) << "+ X [ABX]";
             } else if (addrMode == &CPU::ABY) {
-                low = bus.CPURead(addr++, true);
-                high = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
+                high = m_Bus.CPURead(addr++, true);
                 ss << ToHex((u16)(high << 8) | low) << "+ Y [ABY]";
             } else if (addrMode == &CPU::IND) {
-                low = bus.CPURead(addr++, true);
-                high = bus.CPURead(addr++, true);
+                low = m_Bus.CPURead(addr++, true);
+                high = m_Bus.CPURead(addr++, true);
                 ss << "(" << ToHex((u16)(high << 8) | low) << ") [IND]";
             } else if (addrMode == &CPU::REL) {
-                value = bus.CPURead(addr++, true);
+                value = m_Bus.CPURead(addr++, true);
                 ss << ToHex(value) << " ($" << ToHex(addr + (i8)value)
                    << ") [REL]";
             }
         }
 
-        lines[lineAddr] = ss.str();
+        m_DisassembledCode.insert_or_assign(lineAddr,
+                                            GUI::Label(ss.str(), m_Font));
     }
-
-    return lines;
 }
 
 void Disassembler::NextLine() {
@@ -197,7 +199,33 @@ void Disassembler::NextLine() {
                       m_NextPosition.y + charHeight};
 }
 
-void Disassembler::MemoryDisassembly() {}
+void Disassembler::MemoryDisassembly() {
+    NextLine();
+    auto it = m_DisassembledCode.find(m_Bus.m_CPU.pc);
+
+    for (i32 i = 0; i < 10; i++) {
+        if (--it != m_DisassembledCode.end()) {
+            m_Renderer.DrawText(it->second, m_NextPosition);
+            NextLine();
+        }
+    }
+
+    it = m_DisassembledCode.find(m_Bus.m_CPU.pc);
+
+    if (it != m_DisassembledCode.end()) {
+        it->second.SetColor(Color::blue);
+        m_Renderer.DrawText(it->second, m_NextPosition);
+        it->second.SetColor(Color::white);
+        NextLine();
+
+        for (i32 i = 0; i < 10; i++) {
+            if (++it != m_DisassembledCode.end()) {
+                m_Renderer.DrawText(it->second, m_NextPosition);
+                NextLine();
+            }
+        }
+    }
+}
 
 void Disassembler::PPUPalettes() {}
 

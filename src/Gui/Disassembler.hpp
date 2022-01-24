@@ -44,8 +44,10 @@ class Disassembler {
         } Registers[5];
     } m_CPURegisters;
 
+    std::map<u16, GUI::Label> m_DisassembledCode;
+
    private:
-    std::map<u16, std::string> Disassemble(u16 start, u16 end, const Bus& bus);
+    void Disassemble(u16 start, u16 end);
     void NextLine();
 };
 }  // namespace Emulation

@@ -16,6 +16,12 @@ class Label {
           const Color& color = Color::white);
     ~Label();
 
+    Label(const Label& other) = delete;
+    Label& operator=(const Label&) = delete;
+
+    Label(Label&&) = default;
+    Label& operator=(Label&&) = default;
+
     void SetText(const std::string& text);
     void SetFont(TTF_Font*);
     void SetColor(const Color& color);
