@@ -80,7 +80,7 @@ PPU::PPU() : m_Screen(NES_SCREEN_SIZE) {
     }
 }
 
-u8 PPU::CPURead(u16 addr, [[maybe_unused]] bool readOnly) {
+u8 PPU::CPURead(u16 addr, [[maybe_unused]] bool readOnly) const {
     u8 data = 0x00;
 
     switch (addr) {
@@ -126,7 +126,7 @@ void PPU::CPUWrite(u16 addr, [[maybe_unused]] u8 data) {
     }
 }
 
-u8 PPU::PPURead(u16 addr, [[maybe_unused]] bool readOnly) {
+u8 PPU::PPURead(u16 addr, [[maybe_unused]] bool readOnly) const {
     u8 data = 0;
     addr &= 0x3FFF;
 

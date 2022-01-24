@@ -13,10 +13,10 @@ class PPU {
     PPU();
     ~PPU() = default;
 
-    u8 CPURead(u16 addr, bool readOnly = false);
+    u8 CPURead(u16 addr, bool readOnly = false) const;
     void CPUWrite(u16 addr, u8 data);
 
-    u8 PPURead(u16 addr, bool readOnly = false);
+    u8 PPURead(u16 addr, bool readOnly = false) const;
     void PPUWrite(u16 addr, u8 data);
 
     void ConnectCatridge(const std::shared_ptr<Cartridge>&);

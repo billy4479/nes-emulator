@@ -3,8 +3,6 @@
 
 #include "../Common/Common.hpp"
 
-class Disassembler;
-
 namespace Emulation {
 
 // Foreward declaration to avoid circular inclusion
@@ -150,7 +148,7 @@ class CPU {
         u8 cycles = 0;
     };
 
-    std::vector<Instruction> m_Lookup;
+    Instruction m_Lookup[256];
 
 #define UPDATE_Z(R) stat.Z = (R) == 0x00
 #define UPDATE_N(R) stat.N = (R)&0x80
@@ -159,7 +157,7 @@ class CPU {
     UPDATE_N(R);
 
    private:
-    friend class ::Disassembler;
+    friend class Disassembler;
 };
 
 }  // namespace Emulation

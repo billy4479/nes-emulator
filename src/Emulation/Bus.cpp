@@ -35,7 +35,7 @@ void Bus::CPUWrite(u16 addr, u8 data) {
     } else
         throw std::out_of_range("Specified address is outside the bus' range.");
 }
-u8 Bus::CPURead(u16 addr, bool readOnly) {
+u8 Bus::CPURead(u16 addr, bool readOnly) const {
     u8 data = 0;
 
     if (m_Cartridge->CPURead(addr, data)) {

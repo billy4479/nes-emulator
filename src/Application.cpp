@@ -37,7 +37,8 @@ void Application::Run() {
     m_Nes.LoadAndInsertCartridge("nestest.nes", m_AssetManager);
     m_Nes.Reset();
 
-    auto disassembler = Disassembler(m_Nes, m_Renderer, m_AssetManager);
+    auto disassembler =
+        Emulation::Disassembler(m_Nes, m_Renderer, m_AssetManager);
 
     auto scale = glm::ivec2{1, 1} * PIXEL_SCALE_FACTOR;
 
