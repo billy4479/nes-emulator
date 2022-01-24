@@ -13,11 +13,15 @@ namespace Emulation {
 template <typename T>
 requires std::integral<T>
 static std::string ToHex(T n) {
-    constexpr auto charsPerByte = sizeof(T) * 2;
-    std::string s(charsPerByte, '0');
-    for (int i = charsPerByte; i > 0; i--, n >>= 4)
-        s[i] = "0123456789ABCDEF"[n & 0xF];
-    return s;
+    // https://stackoverflow.com/a/33447587/13166735
+
+    constexpr auto stringLength = sizeof(T) << 1;
+    constexpr char digits[] = "0123456789ABCDEF";
+    std::string result(stringLength, '0');
+    for (size_t i = 0, j = (stringLength - 1) * 4; i < stringLength;
+         ++i, j -= 4)
+        result[i] = digits[(n >> j) & 0x0f];
+    return result;
 };
 
 Disassembler::Disassembler(const Bus& bus, GUI::Renderer& renderer,
@@ -65,7 +69,6 @@ Disassembler::Disassembler(const Bus& bus, GUI::Renderer& renderer,
                   },
               },
       }) {
-    dbg_print("LOL\n");
     Disassemble(0x0000, 0xFFFF);
 }
 
@@ -203,8 +206,14 @@ void Disassembler::MemoryDisassembly() {
     NextLine();
     auto it = m_DisassembledCode.find(m_Bus.m_CPU.pc);
 
+    for (i32 i = 0; i <= 10; i++) {
+        if (--it == m_DisassembledCode.end()) {
+            break;
+        }
+    }
+
     for (i32 i = 0; i < 10; i++) {
-        if (--it != m_DisassembledCode.end()) {
+        if (++it != m_DisassembledCode.end()) {
             m_Renderer.DrawText(it->second, m_NextPosition);
             NextLine();
         }

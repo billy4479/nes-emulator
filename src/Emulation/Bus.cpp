@@ -46,8 +46,8 @@ u8 Bus::CPURead(u16 addr, bool readOnly) const {
         data = m_PPU.CPURead(addr & 0x0007, readOnly);
 
     else {
-        dbg_print("[!] Specified address %x is outside the bus' range.\n",
-                  addr);
+        // dbg_print("[!] Specified address %x is outside the bus' range.\n",
+        //           addr);
         // ASSERT(false);
     }
     return data;

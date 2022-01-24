@@ -1,6 +1,9 @@
 #include "Application.hpp"
 
+#include <SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL_events.h>
+#include <SDL_scancode.h>
 
 #include <cstdio>
 #include <memory>
@@ -34,6 +37,40 @@ void Application::Run() {
     m_Nes.LoadAndInsertCartridge("nestest.nes", m_AssetManager);
     m_Nes.Reset();
 
+    m_EventHandler.RemoveAllListeners();
+    m_EventHandler.AddListener(Listener{
+        .Type = SDL_QUIT,
+        .Do =
+            [&](auto) {
+                dbg_print("Quitting\n");
+                isRunning = false;
+            },
+    });
+
+    bool stepByStep = true;
+    bool stepClock = false;
+    bool stepFrame = false;
+
+    m_EventHandler.AddListener(Listener{
+        .Type = SDL_KEYDOWN,
+        .Do =
+            [&](SDL_Event &e) {
+                switch (e.key.keysym.scancode) {
+                    case SDL_SCANCODE_SPACE:
+                        stepByStep = !stepByStep;
+                        break;
+                    case SDL_SCANCODE_C:
+                        stepClock = true;
+                        break;
+                    case SDL_SCANCODE_F:
+                        stepFrame = true;
+                        break;
+                    default:
+                        break;
+                }
+            },
+    });
+
     auto disassembler =
         Emulation::Disassembler(m_Nes, m_Renderer, m_AssetManager);
 
@@ -41,36 +78,48 @@ void Application::Run() {
 
     while (isRunning) {
         m_FPSManager.StartFrame();
-
         m_Renderer.Clear();
         m_EventHandler.HandleEvents();
 
         // Logic here
 
-        do {
-            m_Nes.Clock();
-        } while (!m_Nes.m_PPU.m_FrameComplete);
+        if (stepByStep) {
+            if (stepClock) {
+                do {
+                    m_Nes.Clock();
+                } while (!m_Nes.m_CPU.IsComplete());
+
+                // Do I really need this?
+                do {
+                    m_Nes.Clock();
+                } while (m_Nes.m_CPU.IsComplete());
+                stepClock = false;
+            }
+
+            if (stepFrame) {
+                do {
+                    m_Nes.Clock();
+                } while (!m_Nes.m_PPU.m_FrameComplete);
+                do {
+                    m_Nes.Clock();
+                } while (!m_Nes.m_CPU.IsComplete());
+                m_Nes.m_PPU.m_FrameComplete = false;
+                stepFrame = false;
+            }
+        } else {
+            do {
+                m_Nes.Clock();
+            } while (!m_Nes.m_PPU.m_FrameComplete);
+        }
 
         m_Nes.m_PPU.m_FrameComplete = false;
         m_Renderer.DrawTexture(m_Nes.m_PPU.GetScreenTexture(), {0, 0}, scale);
-
-#if 0
-        {
-            std::stringstream ss;
-            ss << "FPS: " << m_FPSManager.GetActualFPS();
-            fpsLabel.SetText(ss.str());
-            m_Renderer.DrawText(fpsLabel, {NES_EMULATOR_SCREEN_SIZE.x + 10, 0});
-        }
-#endif
 
         disassembler.Render();
 
         // End of logic
 
         m_Renderer.RenderToScreen();
-
-        isRunning = !m_EventHandler.ShouldClose();
-
         m_FPSManager.EndFrameAndWait();
     }
 }
