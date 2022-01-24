@@ -149,8 +149,11 @@ void PPU::ConnectCatridge(const std::shared_ptr<Cartridge>& cartridge) {
 }
 
 void PPU::Clock() {
-    m_Screen.PutPixel({m_Cycle - 1, m_ScanLine},
-                      m_ColorPalette[(rand() % 2) ? 0x3F : 0x30]);
+    // That's the blank period
+    if (!(m_Cycle > NES_SCREEN_SIZE.x || m_ScanLine > NES_SCREEN_SIZE.y)) {
+        m_Screen.PutPixel({m_Cycle - 1, m_ScanLine},
+                          m_ColorPalette[(rand() % 2) ? 0x3F : 0x30]);
+    }
 
     m_Cycle++;
     if (m_Cycle >= 341) {
