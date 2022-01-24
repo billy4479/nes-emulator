@@ -1,8 +1,6 @@
 
 #include "Bus.hpp"
 
-#include <assert.h>
-
 #include <sstream>
 
 #include "CPU.hpp"
@@ -49,7 +47,7 @@ u8 Bus::CPURead(u16 addr, bool readOnly) const {
     else {
         dbg_print("[!] Specified address %x is outside the bus' range.\n",
                   addr);
-        // assert(false);
+        // ASSERT(false);
     }
     return data;
 }
@@ -77,7 +75,7 @@ void Bus::Reset() {
 
 std::string Bus::DumpAsHex(u16 start, u16 length) {
     std::stringstream ss;
-    assert(start + length < m_CPURam.size());
+    ASSERT(start + length < m_CPURam.size());
 
     auto hex_u8 = [](u8 n) {
         std::string s(2, '0');

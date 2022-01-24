@@ -14,9 +14,6 @@
 
 Application::Application(glm::ivec2 size)
     : m_AssetManager("assets"), m_Renderer("NES-Emulator", size) {
-    assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
-    assert(TTF_Init() == 0);
-
     m_AssetManager.LoadFont(
         "JetBrains Mono Regular Nerd Font Complete Mono.ttf", "JetBrains Mono",
         28);
@@ -31,7 +28,7 @@ Application::~Application() {
 }
 
 void Application::Run() {
-    assert(!isRunning);
+    ASSERT(!isRunning);
     isRunning = true;
 
     m_Nes.LoadAndInsertCartridge("nestest.nes", m_AssetManager);
@@ -41,8 +38,6 @@ void Application::Run() {
         Emulation::Disassembler(m_Nes, m_Renderer, m_AssetManager);
 
     auto scale = glm::ivec2{1, 1} * PIXEL_SCALE_FACTOR;
-
-    auto fpsLabel = GUI::Label("", m_AssetManager.GetFont("JetBrains Mono"));
 
     while (isRunning) {
         m_FPSManager.StartFrame();

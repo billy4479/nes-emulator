@@ -7,13 +7,20 @@
 namespace GUI {
 
 Renderer::Renderer(std::string_view name, glm::ivec2 size) {
-    assert(m_Renderer == nullptr);
+    ASSERT(m_Renderer == nullptr);
+
+    ASSERT(SDL_Init(SDL_INIT_EVERYTHING) == 0);
+    CHECK_SDL_ERROR();
+    ASSERT(TTF_Init() == 0);
+    CHECK_SDL_ERROR();
 
     m_Window = SDL_CreateWindow(name.data(), SDL_WINDOWPOS_UNDEFINED,
                                 SDL_WINDOWPOS_UNDEFINED, size.x, size.y, 0);
+    CHECK_SDL_ERROR();
 
     m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
-    assert(m_Renderer != nullptr);
+    CHECK_SDL_ERROR();
+    ASSERT(m_Renderer != nullptr);
 }
 
 Renderer::~Renderer() {
@@ -27,7 +34,10 @@ SDL_Texture* Renderer::Convert(SDL_Surface* surface) {
     return SDL_CreateTextureFromSurface(m_Renderer, surface);
 }
 
-void Renderer::RenderToScreen() { SDL_RenderPresent(m_Renderer); }
+void Renderer::RenderToScreen() {
+    SDL_RenderPresent(m_Renderer);
+    CHECK_SDL_ERROR();
+}
 
 static const glm::ivec2 CenterPointToCoords(const CenterPoint& center,
                                             SDL_Rect& dRect) {
@@ -67,10 +77,11 @@ static const glm::ivec2 CenterPointToCoords(const CenterPoint& center,
 void Renderer::DrawTexture(SDL_Texture* texture, glm::ivec2 position,
                            glm::vec2 scale, f32 rotation, Color tint,
                            CenterPoint anchor, CenterPoint rotationCenter) {
-    assert(texture != nullptr);
+    ASSERT(texture != nullptr);
 
     i32 w, h;
     SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+    CHECK_SDL_ERROR();
 
     SDL_Rect sRect{0, 0, w, h};
     SDL_Rect dRect{position.x, position.y,
@@ -91,9 +102,14 @@ void Renderer::DrawTexture(SDL_Texture* texture, glm::ivec2 position,
                                         rotationCenterPoint.y};
 
     SDL_SetTextureColorMod(texture, tint.r, tint.g, tint.b);
+    CHECK_SDL_ERROR();
+
     SDL_SetTextureAlphaMod(texture, tint.a);
+    CHECK_SDL_ERROR();
+
     SDL_RenderCopyEx(m_Renderer, texture, &sRect, &dRect, rotation,
                      &rotationCenterPointSDL, (SDL_RendererFlip)flip);
+    CHECK_SDL_ERROR();
 }
 
 void Renderer::DrawTexture(DrawableTexture& texture, glm::ivec2 position,
@@ -109,9 +125,16 @@ void Renderer::DrawText(Label& label, glm::ivec2 position, glm::vec2 scale,
     if (label.m_Texture == nullptr) {
         auto* surface = TTF_RenderText_Blended(
             label.m_Font, label.m_Content.c_str(), label.m_Color);
+        CHECK_SDL_ERROR();
+
         label.m_Texture = SDL_CreateTextureFromSurface(m_Renderer, surface);
+        CHECK_SDL_ERROR();
+
         SDL_FreeSurface(surface);
+        CHECK_SDL_ERROR();
     }
+
+    ASSERT(label.m_Texture != nullptr);
 
     DrawTexture(label.m_Texture, position, scale, rotation, tint, anchor,
                 rotationCenter);

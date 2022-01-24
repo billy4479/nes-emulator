@@ -1,7 +1,5 @@
 #include "Cartridge.hpp"
 
-#include <assert.h>
-
 #include <fstream>
 #include <ios>
 #include <memory>
@@ -35,7 +33,7 @@ Cartridge::Cartridge(std::filesystem::path path) {
 
     std::ifstream file;
     file.open(path, std::ifstream::binary);
-    assert(file.is_open());
+    ASSERT(file.is_open());
 
     // Read the header
     file.read(reinterpret_cast<char *>(&header), sizeof(Header));
@@ -56,7 +54,7 @@ Cartridge::Cartridge(std::filesystem::path path) {
 
     switch (version) {
         case 0:
-            assert(false);
+            ASSERT(false);
         case 1:
             m_ProgramMemoryBanks = header.ProgramRomChunks;
             m_PRGMemory.resize(m_ProgramMemoryBanks * 16 * 1024);
@@ -69,9 +67,9 @@ Cartridge::Cartridge(std::filesystem::path path) {
                       m_CHRMemory.size());
             break;
         case 2:
-            assert(false);
+            ASSERT(false);
         default:
-            assert(false);
+            ASSERT(false);
     }
 
     file.close();
@@ -88,7 +86,7 @@ Cartridge::Cartridge(std::filesystem::path path) {
     switch (m_MapperID) {
         MAPPER_CASE(0, 000)
         default:
-            assert(false);
+            ASSERT(false);
     }
 
 #undef MAPPER_CASE

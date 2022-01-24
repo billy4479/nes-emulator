@@ -14,6 +14,7 @@ class Label {
     //     Label() = default;
     Label(const std::string& text, TTF_Font* font,
           const Color& color = Color::white);
+    ~Label();
 
     void SetText(const std::string& text);
     void SetFont(TTF_Font*);
