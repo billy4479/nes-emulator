@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL_rect.h>
 
 #include <glm/ext/vector_int2.hpp>
 #include <glm/vec2.hpp>
@@ -32,20 +33,28 @@ class Renderer {
 
     void Clear();
     void RenderToScreen();
-    void DrawTexture(SDL_Texture *texture, glm::ivec2 position,
-                     glm::vec2 scale = {1, 1}, f32 rotation = 0,
-                     Color tint = Color::white,
-                     CenterPoint anchor = CenterPoint::TOP_LEFT,
-                     CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
     void DrawTexture(DrawableTexture &texture, glm::ivec2 position,
                      glm::vec2 scale = {1, 1}, f32 rotation = 0,
                      Color tint = Color::white,
                      CenterPoint anchor = CenterPoint::TOP_LEFT,
                      CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
+
+    void DrawTextureRect(
+        DrawableTexture &texture, const SDL_Rect &sourceRect,
+        glm::ivec2 position, glm::vec2 scale = {1, 1}, f32 rotation = 0,
+        Color tint = Color::white, CenterPoint anchor = CenterPoint::TOP_LEFT,
+        CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
+
     void DrawText(Label &label, glm::ivec2 position, glm::vec2 scale = {1, 1},
                   f32 rotation = 0, Color tint = Color::white,
                   CenterPoint anchor = CenterPoint::TOP_LEFT,
                   CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
+
+   private:
+    void DrawTextureInternal(SDL_Texture *texture, glm::ivec2 position,
+                             glm::vec2 scale, f32 rotation, Color tint,
+                             CenterPoint anchor, CenterPoint rotationCenter,
+                             const SDL_Rect *sourceRect = nullptr);
 
    private:
     SDL_Renderer *m_Renderer = nullptr;

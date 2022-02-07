@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 
+#include <SDL_rect.h>
 #include <SDL_render.h>
 #include <SDL_surface.h>
 #include <SDL_video.h>
@@ -74,19 +75,26 @@ static const glm::ivec2 CenterPointToCoords(const CenterPoint& center,
     return {0, 0};
 }
 
-void Renderer::DrawTexture(SDL_Texture* texture, glm::ivec2 position,
-                           glm::vec2 scale, f32 rotation, Color tint,
-                           CenterPoint anchor, CenterPoint rotationCenter) {
+void Renderer::DrawTextureInternal(SDL_Texture* texture, glm::ivec2 position,
+                                   glm::vec2 scale, f32 rotation, Color tint,
+                                   CenterPoint anchor,
+                                   CenterPoint rotationCenter,
+                                   const SDL_Rect* sourceRect) {
     ASSERT(texture != nullptr);
 
     i32 w, h;
     SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
     CHECK_SDL_ERROR();
 
-    SDL_Rect sRect{0, 0, w, h};
-    SDL_Rect dRect{position.x, position.y,
-                   static_cast<i32>(abs(scale.x) * (f32)w),
-                   static_cast<i32>(abs(scale.y) * (f32)h)};
+    SDL_Rect sRect;
+    if (sourceRect == nullptr)
+        sRect = {0, 0, w, h};
+    else
+        sRect = *sourceRect;
+
+    SDL_Rect dRect = {position.x, position.y,
+                      static_cast<i32>(abs(scale.x) * (f32)sRect.w),
+                      static_cast<i32>(abs(scale.y) * (f32)sRect.h)};
 
     auto anchorPoint = CenterPointToCoords(anchor, dRect);
     auto rotationCenterPoint = CenterPointToCoords(rotationCenter, dRect);
@@ -115,8 +123,16 @@ void Renderer::DrawTexture(SDL_Texture* texture, glm::ivec2 position,
 void Renderer::DrawTexture(DrawableTexture& texture, glm::ivec2 position,
                            glm::vec2 scale, f32 rotation, Color tint,
                            CenterPoint anchor, CenterPoint rotationCenter) {
-    DrawTexture(texture.Finalize(*this), position, scale, rotation, tint,
-                anchor, rotationCenter);
+    DrawTextureInternal(texture.Finalize(*this), position, scale, rotation,
+                        tint, anchor, rotationCenter);
+}
+
+void Renderer::DrawTextureRect(DrawableTexture& texture,
+                               const SDL_Rect& sourceRect, glm::ivec2 position,
+                               glm::vec2 scale, f32 rotation, Color tint,
+                               CenterPoint anchor, CenterPoint rotationCenter) {
+    DrawTextureInternal(texture.Finalize(*this), position, scale, rotation,
+                        tint, anchor, rotationCenter, &sourceRect);
 }
 
 void Renderer::DrawText(Label& label, glm::ivec2 position, glm::vec2 scale,
@@ -136,8 +152,8 @@ void Renderer::DrawText(Label& label, glm::ivec2 position, glm::vec2 scale,
 
     ASSERT(label.m_Texture != nullptr);
 
-    DrawTexture(label.m_Texture, position, scale, rotation, tint, anchor,
-                rotationCenter);
+    DrawTextureInternal(label.m_Texture, position, scale, rotation, tint,
+                        anchor, rotationCenter);
 }
 
 }  // namespace GUI
