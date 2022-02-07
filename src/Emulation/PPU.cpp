@@ -150,7 +150,7 @@ void PPU::ConnectCatridge(const std::shared_ptr<Cartridge>& cartridge) {
 
 void PPU::Clock() {
     // That's the blank period
-    if (!(m_Cycle > NES_SCREEN_SIZE.x || m_ScanLine > NES_SCREEN_SIZE.y)) {
+    if (!IsBlankPeriod()) {
         m_Screen.PutPixel({m_Cycle - 1, m_ScanLine},
                           m_ColorPalette[(rand() % 2) ? 0x3F : 0x30]);
     }
@@ -160,10 +160,14 @@ void PPU::Clock() {
         m_Cycle = 0;
         m_ScanLine++;
         if (m_ScanLine >= 261) {
-            m_ScanLine = -1;
+            m_ScanLine = 0;
             m_FrameComplete = true;
         }
     }
+}
+
+bool PPU::IsBlankPeriod() {
+    return (m_Cycle > NES_SCREEN_SIZE.x || m_ScanLine > NES_SCREEN_SIZE.y);
 }
 
 }  // namespace Emulation

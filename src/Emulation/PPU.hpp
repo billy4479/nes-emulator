@@ -22,6 +22,8 @@ class PPU {
     void ConnectCatridge(const std::shared_ptr<Cartridge>&);
     void Clock();
 
+    bool IsBlankPeriod();
+
    private:
     std::shared_ptr<Cartridge> m_Cartridge;
 
