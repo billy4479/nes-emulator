@@ -35,7 +35,6 @@ class Renderer {
     void RenderToScreen();
     void DrawTexture(DrawableTexture &texture, glm::ivec2 position,
                      glm::vec2 scale = {1, 1}, f32 rotation = 0,
-                     Color tint = Color::white,
                      CenterPoint anchor = CenterPoint::TOP_LEFT,
                      CenterPoint rotationCenter = CenterPoint::CENTER_CENTER);
 

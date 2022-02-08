@@ -37,9 +37,11 @@ void DrawableTexture::Clear(const Color& c) {
     m_Texture = nullptr;
 }
 
-DrawableTexture::DrawableTexture(glm::ivec2 size) {
+DrawableTexture::DrawableTexture(glm::ivec2 size, Color color)
+    : Tint(Color::white) {
     m_Surface = SDL_CreateRGBSurfaceWithFormat(0, size.x, size.y, 32,
                                                Color::PixelFormat);
+    Clear(color);
 }
 
 DrawableTexture::~DrawableTexture() {

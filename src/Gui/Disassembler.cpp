@@ -1,10 +1,13 @@
 #include "Disassembler.hpp"
 
+#include <SDL_events.h>
+
 #include <algorithm>
 #include <sstream>
 #include <type_traits>
 
 #include "../Common/Costants.hpp"
+#include "DrawableTexture.hpp"
 #include "Label.hpp"
 #include "Renderer.hpp"
 
@@ -24,11 +27,12 @@ static std::string ToHex(T n) {
     return result;
 };
 
-Disassembler::Disassembler(const Bus& bus, GUI::Renderer& renderer,
-                           AssetManager& am)
+Disassembler::Disassembler(Bus& bus, GUI::Renderer& renderer, AssetManager& am,
+                           EventHandler& em)
     : m_Bus(bus),
       m_Renderer(renderer),
-      m_Font(am.GetFont("JetBrains Mono")),
+      m_Font(am.LoadFont(DEBUG_FONT.path, DEBUG_FONT.name.data(),
+                         DEBUG_FONT.fontSize)),
       m_CPURegisters({
           .Status =
               {
@@ -69,11 +73,19 @@ Disassembler::Disassembler(const Bus& bus, GUI::Renderer& renderer,
                   },
               },
       }) {
+    em.AddListener(Listener{
+        .Type = SDL_KEYDOWN,
+        .Do =
+            [&](SDL_Event& e) {
+                if (e.key.keysym.scancode == SDL_SCANCODE_P)
+                    (++m_Palettes.Selected.ID) &= 0x07;
+            },
+    });
     Disassemble(0x0000, 0xFFFF);
 }
 
 void Disassembler::Render() {
-    m_NextPosition = {NES_EMULATOR_SCREEN_SIZE.x + 15, 10};
+    m_NextPosition = {NES_EMULATOR_SCREEN_SIZE.x + leftPadding, 10};
     CPUStatus();
     CPURegisters();
     MemoryDisassembly();
@@ -83,14 +95,14 @@ void Disassembler::Render() {
 
 void Disassembler::CPUStatus() {
     m_Renderer.DrawText(m_CPURegisters.Status.StatusLabel, m_NextPosition);
-    m_NextPosition.x += charWidth * 9;
+    m_NextPosition.x += DEBUG_FONT.charWidth * 9;
 
 #define DISPLAY_STATUS(i, name)                                             \
     {                                                                       \
         m_CPURegisters.Status.Bits[0].SetColor(                             \
             m_Bus.m_CPU.stat.name ? Color::green : Color::red);             \
         m_Renderer.DrawText(m_CPURegisters.Status.Bits[i], m_NextPosition); \
-        m_NextPosition.x += 2 * charWidth;                                  \
+        m_NextPosition.x += 2 * DEBUG_FONT.charWidth;                       \
     }
 
     DISPLAY_STATUS(0, C);
@@ -112,7 +124,7 @@ void Disassembler::CPURegisters() {
     {                                                                          \
         m_CPURegisters.Registers[i].Value.SetText(ToHex(m_Bus.m_CPU.name));    \
         m_Renderer.DrawText(m_CPURegisters.Registers[i].Name, m_NextPosition); \
-        m_NextPosition.x += 3 * charWidth;                                     \
+        m_NextPosition.x += 3 * DEBUG_FONT.charWidth;                          \
         m_Renderer.DrawText(m_CPURegisters.Registers[i].Value,                 \
                             m_NextPosition);                                   \
         NextLine();                                                            \
@@ -199,7 +211,7 @@ void Disassembler::Disassemble(u16 start, u16 end) {
 
 void Disassembler::NextLine() {
     m_NextPosition = {NES_EMULATOR_SCREEN_SIZE.x + leftPadding,
-                      m_NextPosition.y + charHeight};
+                      m_NextPosition.y + DEBUG_FONT.charHeight};
 }
 
 void Disassembler::MemoryDisassembly() {
@@ -236,8 +248,41 @@ void Disassembler::MemoryDisassembly() {
     }
 }
 
-void Disassembler::PPUPalettes() {}
+void Disassembler::PPUPalettes() {
+    NextLine();
 
-void Disassembler::PPUSprites() {}
+    for (i32 paletteID = 0; paletteID < 8; paletteID++) {
+        if (paletteID == m_Palettes.Selected.ID) {
+            m_Renderer.DrawTexture(m_Palettes.Selected.Selected,
+                                   {m_NextPosition.x, m_NextPosition.y - 4});
+        }
+
+        for (i32 pixelValue = 0; pixelValue < 4; pixelValue++) {
+            m_Palettes.Palettes[paletteID].Colors[pixelValue].Tint =
+                m_Bus.m_PPU.GetColorFromPalette(paletteID, pixelValue);
+
+            m_Renderer.DrawTexture(
+                m_Palettes.Palettes[paletteID].Colors[pixelValue],
+                m_NextPosition);
+            m_NextPosition.x += paletteSize;
+        }
+        m_NextPosition.x += 10;
+    }
+    NextLine();
+}
+
+void Disassembler::PPUSprites() {
+    NextLine();
+
+    m_Bus.m_PPU.UpdatePatternTables(m_Palettes.Selected.ID);
+
+    m_Renderer.DrawTexture(m_Bus.m_PPU.m_PatternTableSprites[0], m_NextPosition,
+                           {2, 2});
+    m_NextPosition.x += 128 * 2 + 15;
+    m_Renderer.DrawTexture(m_Bus.m_PPU.m_PatternTableSprites[1], m_NextPosition,
+                           {2, 2});
+    m_NextPosition.y += 128 * 2;
+    NextLine();
+}
 
 }  // namespace Emulation

@@ -20,4 +20,4 @@ cmake --build build
 ## References
 
 - [https://github.com/OneLoneCoder/olcNES](https://github.com/OneLoneCoder/olcNES)
-- [http://obelisk.me.uk/6502/reference.html](http://obelisk.me.uk/6502/reference.html)
+- [https://wiki.nesdev.org](https://wiki.nesdev.org)

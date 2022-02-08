@@ -15,8 +15,10 @@ class DrawableTexture {
     void PutPixel(glm::ivec2 position, const Color& c);
     void Clear(const Color& c);
 
+    Color Tint;
+
    public:
-    DrawableTexture(glm::ivec2 size);
+    DrawableTexture(glm::ivec2 size, Color color = Color::black);
     ~DrawableTexture();
 
    private:

@@ -71,8 +71,8 @@ void Application::Run() {
             },
     });
 
-    auto disassembler =
-        Emulation::Disassembler(m_Nes, m_Renderer, m_AssetManager);
+    auto disassembler = Emulation::Disassembler(m_Nes, m_Renderer,
+                                                m_AssetManager, m_EventHandler);
 
     auto scale = glm::ivec2{1, 1} * PIXEL_SCALE_FACTOR;
 
@@ -99,20 +99,20 @@ void Application::Run() {
             if (stepFrame) {
                 do {
                     m_Nes.Clock();
-                } while (!m_Nes.m_PPU.m_FrameComplete);
+                } while (!m_Nes.m_PPU.FrameComplete);
                 do {
                     m_Nes.Clock();
                 } while (!m_Nes.m_CPU.IsComplete());
-                m_Nes.m_PPU.m_FrameComplete = false;
+                m_Nes.m_PPU.FrameComplete = false;
                 stepFrame = false;
             }
         } else {
             do {
                 m_Nes.Clock();
-            } while (!m_Nes.m_PPU.m_FrameComplete);
+            } while (!m_Nes.m_PPU.FrameComplete);
         }
 
-        m_Nes.m_PPU.m_FrameComplete = false;
+        m_Nes.m_PPU.FrameComplete = false;
         m_Renderer.DrawTexture(m_Nes.m_PPU.GetScreenTexture(), {0, 0}, scale);
 
         disassembler.Render();

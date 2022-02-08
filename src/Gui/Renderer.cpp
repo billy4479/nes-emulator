@@ -121,10 +121,10 @@ void Renderer::DrawTextureInternal(SDL_Texture* texture, glm::ivec2 position,
 }
 
 void Renderer::DrawTexture(DrawableTexture& texture, glm::ivec2 position,
-                           glm::vec2 scale, f32 rotation, Color tint,
-                           CenterPoint anchor, CenterPoint rotationCenter) {
+                           glm::vec2 scale, f32 rotation, CenterPoint anchor,
+                           CenterPoint rotationCenter) {
     DrawTextureInternal(texture.Finalize(*this), position, scale, rotation,
-                        tint, anchor, rotationCenter);
+                        texture.Tint, anchor, rotationCenter);
 }
 
 void Renderer::DrawTextureRect(DrawableTexture& texture,
